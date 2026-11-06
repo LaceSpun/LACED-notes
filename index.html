@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#e9e5dc">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Laced Notes">
+<meta name="description" content="A quiet, local-first songwriting studio.">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" type="image/svg+xml" href="./icon.svg">
+
+
+
+<style>
+:root{font-synthesis:none;color-scheme:light;--bg:#e9e5dc;--surface:rgba(250,249,246,.8);--paper:rgba(255,254,249,.78);--ink:#2e3534;--muted:#777d78;--accent:#54877d;--accent-soft:#ddeae5;--line:rgba(60,63,57,.12);--theme-detail:#9e8466;--ambient:rgba(152,126,89,.14);--shadow:0 19px 50px rgba(48,48,44,.06);--sans:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;--serif:Georgia,"Times New Roman",serif}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;height:100%;-webkit-text-size-adjust:100%}body{background:var(--bg);color:var(--ink);font:14px/1.45 var(--sans);overflow:hidden;transition:background-color .25s,color .25s}button,input,textarea,select{font:inherit;color:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:3px}button:disabled{opacity:.45;cursor:not-allowed}[hidden]{display:none!important}.sr-only{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}.app-shell{height:100dvh;display:flex;flex-direction:column;isolation:isolate}.topbar{z-index:8;flex:0 0 auto;height:72px;display:grid;grid-template-columns:1fr 1fr 1fr;align-items:center;padding:0 max(28px,env(safe-area-inset-right)) 0 max(28px,env(safe-area-inset-left));border-bottom:1px solid var(--line);background:color-mix(in srgb,var(--bg),#fff 15%)}.brand{display:flex;align-items:center;gap:12px;white-space:nowrap}.brand-icon{width:36px;height:36px;border-radius:12px;background:var(--accent);display:grid;place-items:center;transform:rotate(-6deg);box-shadow:0 4px 12px #0000000c;color:white}.brand-scribble{font-size:25px;transform:rotate(12deg)}.brand-type strong{display:block;font-size:19px;letter-spacing:-1px;line-height:1}.brand-type strong span{font-weight:400}.brand-type small{display:block;color:var(--muted);font-size:10px;letter-spacing:.08em;margin-top:4px}.header-center{display:flex;align-items:center;justify-content:center;gap:9px;color:var(--muted);font-size:11px;letter-spacing:.02em;min-width:0}.header-center span#headerProject{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;max-width:180px}.tiny-light{width:5px;height:5px;border-radius:50%;background:var(--accent);display:inline-block}.header-sep{opacity:.35}.header-actions{display:flex;align-items:center;justify-content:flex-end;gap:8px}.save-status{font-size:11px;color:var(--muted);margin-right:7px}.icon-button{width:36px;height:36px;display:grid;place-items:center;border:1px solid transparent;background:transparent;border-radius:10px;transition:background .15s,border-color .15s}.icon-button:hover,.icon-button.active{background:var(--surface);border-color:var(--line)}[data-icon] svg{width:18px;height:18px;display:block;stroke-width:1.7}.content-row{min-height:0;display:flex;flex:1}.tool-rail{z-index:2;flex:0 0 77px;border-right:1px solid var(--line);padding:21px 10px 19px;display:flex;flex-direction:column;align-items:center;gap:8px;background:color-mix(in srgb,var(--bg),white 12%)}.rail-btn{border:0;background:transparent;color:var(--muted);border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;height:60px;width:58px;font-size:9px;letter-spacing:.01em}.rail-btn span[data-icon] svg{width:20px;height:20px}.rail-btn:hover,.rail-btn.active{color:var(--accent);background:var(--surface)}.rail-line{height:1px;width:28px;background:var(--line);margin:5px 0}.rail-spacer{flex:1}.main-region{flex:1;min-width:0;position:relative;overflow:auto;scrollbar-width:thin;scrollbar-color:var(--line) transparent}.board-ambient{position:absolute;inset:0;pointer-events:none;overflow:hidden;opacity:.8}.ambient-circle{position:absolute;width:350px;height:350px;border:1px solid var(--ambient);border-radius:50%;top:12%;right:-230px}.ambient-line{position:absolute;left:6%;bottom:15%;width:56px;height:56px;border-left:1px solid var(--ambient);border-bottom:1px solid var(--ambient);transform:rotate(-10deg)}.workspace{width:min(100%,1020px);min-height:100%;margin:0 auto;padding:clamp(24px,5vh,56px) clamp(23px,6.5vw,90px) 34px;position:relative;display:flex;flex-direction:column}.workspace-prelude{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:28px}.eyebrow{font-size:10px;font-weight:650;letter-spacing:.15em;color:var(--accent);display:flex;align-items:center;gap:9px}.eyebrow-dot{width:7px;height:7px;border-radius:50%;border:1px solid currentColor}.eyebrow-side{margin-left:11px;font-size:9px;letter-spacing:.11em;color:var(--muted);font-weight:400}.workspace-controls{display:flex;gap:10px;align-items:center}.view-label{font-size:9px;letter-spacing:.12em;color:var(--muted)}.subtle-btn,.inline-action,.prompt-button{border:0;background:transparent;color:var(--muted);display:inline-flex;gap:7px;align-items:center;font-size:11px;border-radius:8px;padding:8px 9px}.subtle-btn:hover,.inline-action:hover,.prompt-button:hover{background:var(--surface);color:var(--ink)}.subtle-btn [data-icon] svg,.inline-action [data-icon] svg,.prompt-button [data-icon] svg{width:14px;height:14px}.paper-area{position:relative;flex:1;min-height:340px;border:1px solid var(--line);border-radius:9px;background:var(--paper);box-shadow:var(--shadow);padding:clamp(25px,4vw,54px) clamp(24px,5vw,65px) 14px;display:flex;flex-direction:column;backdrop-filter:blur(4px)}.paper-area:before{content:"";position:absolute;left:26px;top:0;width:36px;height:3px;background:var(--accent);opacity:.58;border-radius:0 0 5px 5px}.editor-topline{display:flex;gap:8px;align-items:center;letter-spacing:.12em;font-size:10px;color:var(--muted)}.tiny-dash{width:13px;height:1px;background:var(--accent)}.editor-topline-right{margin-left:auto;letter-spacing:0}.title-input{width:100%;padding:26px 0 12px;border:0;border-bottom:1px solid var(--line);border-radius:0;background:transparent;outline:none!important;font:normal clamp(28px,3.8vw,47px)/1.22 var(--serif);letter-spacing:-.035em;color:var(--ink)}.title-input::placeholder{color:color-mix(in srgb,var(--ink),transparent 36%)}.phase-editor{width:100%;flex:1;min-height:165px;border:0;resize:none;outline:none!important;background:transparent;color:var(--ink);padding:25px 0 16px;font-size:clamp(14px,1.4vw,17px);line-height:1.95;font-weight:400;letter-spacing:.002em}.phase-editor::placeholder{color:var(--muted);opacity:.72}.editor-footer{display:flex;gap:12px;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid var(--line)}.footer-caption{font-size:10px;color:var(--muted)}.below-canvas{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:21px 6px 0;color:var(--muted)}.one-line{display:flex;gap:9px;font-size:12px;align-items:center}.one-line [data-icon] svg{color:var(--accent);width:16px;height:16px}.phase-bar{border-top:1px solid var(--line);background:color-mix(in srgb,var(--bg),white 17%);display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:76px;padding:11px max(24px,env(safe-area-inset-right)) calc(11px + env(safe-area-inset-bottom)) max(24px,env(safe-area-inset-left));z-index:3}.phase-label,.phase-end{font-size:9px;letter-spacing:.12em;color:var(--muted);white-space:nowrap}.phase-nav{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));align-items:center;gap:7px;width:min(570px,66vw)}.phase-tab{padding:9px 10px;display:flex;align-items:center;justify-content:center;gap:8px;min-height:39px;border:1px solid transparent;background:transparent;border-radius:9px;color:var(--muted);font-size:12px;transition:all .16s}.phase-tab:hover{background:var(--surface)}.phase-tab.active{background:var(--accent-soft);color:var(--ink);border-color:color-mix(in srgb,var(--accent),transparent 72%);font-weight:600}.phase-tab-number{font:600 9px var(--sans);opacity:.56}.popover-anchor{position:fixed;z-index:30;right:max(22px,env(safe-area-inset-right));top:64px;width:260px;background:var(--paper);border:1px solid var(--line);border-radius:13px;padding:9px;box-shadow:0 24px 55px #0002;backdrop-filter:blur(16px)}.pop-title,.mini-caption{font-size:9px;letter-spacing:.14em;color:var(--muted);font-weight:650;margin:12px 12px 9px}.popover-anchor button{width:100%;display:flex;align-items:center;gap:11px;padding:11px 12px;border:0;border-radius:8px;background:transparent;text-align:left;font-size:12px}.popover-anchor button:hover{background:var(--accent-soft)}.popover-anchor button [data-icon] svg{width:16px;height:16px;color:var(--muted)}.popover-anchor button.danger{color:#b35a56}.pop-divider{height:1px;background:var(--line);margin:7px 6px}.drawer-scrim{position:fixed;inset:0;background:rgba(15,22,24,.10);z-index:20}.tool-drawer{position:fixed;z-index:22;right:0;top:72px;bottom:76px;width:min(400px,calc(100vw - 78px));background:color-mix(in srgb,var(--bg),white 42%);border-left:1px solid var(--line);box-shadow:-24px 0 80px #00000015;transform:translateX(105%);transition:transform .25s ease;display:flex;flex-direction:column;backdrop-filter:blur(18px)}.tool-drawer.open{transform:translateX(0)}.drawer-head{padding:24px 26px 15px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:flex-start}.drawer-head .mini-caption{margin:0 0 4px}.drawer-head h2{font:normal 28px/1.25 var(--serif);margin:0;letter-spacing:-.03em}.drawer-body{padding:23px 26px 40px;overflow-y:auto;flex:1}.drawer-section{margin:0 0 24px}.section-kicker{font-size:10px;color:var(--muted);letter-spacing:.1em;margin-bottom:10px}.drawer-intro{font-size:12px;color:var(--muted);line-height:1.7;margin:0 0 24px}.field-label{font-size:11px;color:var(--muted);margin-bottom:7px;display:block}.field-input,.drawer-body input[type=text],.drawer-body textarea,.modal-card input{width:100%;border-radius:9px;padding:12px 13px;border:1px solid var(--line);background:var(--paper);outline:none;color:var(--ink);font-size:13px}.drawer-body textarea{resize:vertical;line-height:1.65}.row-between{display:flex;justify-content:space-between;align-items:center;gap:10px}.soft-btn,.primary-btn,.danger-btn{border:1px solid var(--line);padding:9px 13px;border-radius:9px;background:var(--surface);font-size:12px;display:inline-flex;align-items:center;gap:8px;justify-content:center}.soft-btn:hover{background:var(--accent-soft)}.primary-btn{background:var(--accent);border-color:var(--accent);color:#fff}.primary-btn:hover{filter:brightness(.95)}.danger-btn{color:#b35a56}.tiny-btn{border:0;background:transparent;font-size:11px;color:var(--muted);padding:7px 6px;border-radius:7px}.tiny-btn:hover{background:var(--accent-soft)}.tool-tile{padding:14px 15px;background:var(--paper);border:1px solid var(--line);border-radius:11px;margin:9px 0}.project-tile{width:100%;text-align:left;cursor:pointer;display:flex;align-items:flex-start;gap:11px}.project-tile.selected{border-color:var(--accent)}.project-icon{width:32px;height:32px;border-radius:9px;background:var(--accent-soft);display:grid;place-items:center;color:var(--accent)}.project-tile strong{font-size:13px;display:block;font-weight:600}.project-tile small{font-size:10px;color:var(--muted)}.group-row{padding:11px 0;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px}.group-name{font-size:13px;font-weight:600}.tag-row{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0 16px}.tag{display:inline-flex;gap:5px;align-items:center;background:var(--accent-soft);color:var(--ink);padding:6px 9px;border-radius:16px;font-size:11px;max-width:100%;overflow-wrap:anywhere}.tag button{font-size:15px;border:0;background:none;color:var(--muted);padding:0 0 1px 4px;line-height:1}.inline-field{display:flex;gap:7px}.inline-field input{min-width:0;flex:1}.inline-field .soft-btn{flex:0 0 auto}.theme-option{display:flex;align-items:center;justify-content:space-between;width:100%;border:1px solid var(--line);border-radius:12px;background:var(--paper);padding:11px 13px;margin:8px 0;text-align:left}.theme-option.selected{outline:1px solid var(--accent)}.theme-preview{width:38px;height:30px;border-radius:7px;border:1px solid #0001;box-shadow:inset 0 0 0 8px #ffffff22}.theme-option small{display:block;color:var(--muted);font-size:10px}.writing-prompt{background:var(--paper);padding:20px;border-radius:10px;border:1px solid var(--line);font:normal 21px/1.45 var(--serif);margin-bottom:15px}.modal-scrim{position:fixed;z-index:50;inset:0;background:#0c10146e;display:grid;place-items:center;padding:20px;backdrop-filter:blur(3px)}.modal-card{background:var(--bg);width:min(100%,410px);border-radius:16px;border:1px solid var(--line);padding:26px;box-shadow:0 30px 90px #0003}.modal-head{display:flex;align-items:center;justify-content:space-between}.modal-head h2{font:normal 30px var(--serif);margin:0}.modal-card p{color:var(--muted);font-size:13px;line-height:1.6;margin:12px 0 20px}.modal-card input{margin-bottom:21px}.modal-actions{display:flex;justify-content:end;gap:8px}.toast{z-index:100;position:fixed;bottom:calc(96px + env(safe-area-inset-bottom));left:50%;transform:translate(-50%,14px);padding:11px 17px;border-radius:10px;background:#2e3534;color:#fff;font-size:12px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;box-shadow:0 14px 30px #0002;max-width:90vw;text-align:center}.toast.show{opacity:1;transform:translate(-50%,0)}body.focus .tool-rail,body.focus .workspace-controls,body.focus .below-canvas,body.focus .phase-label,body.focus .phase-end{display:none}body.focus .workspace{width:min(100%,950px)}body.focus .paper-area{min-height:500px}
+/* Seven theme identities share the same geometry. Background detail remains intentionally quiet. */
+body[data-theme=corkboard]{--bg:#e9e5dc;--surface:#f7f5efcf;--paper:#fffdf6d9;--ink:#343a35;--muted:#818079;--accent:#568b81;--accent-soft:#dcebe3;--line:#81766627;--theme-detail:#9d7451;--ambient:#b5a1842c}
+body[data-theme=evidence]{--bg:#343e42;--surface:#455055d9;--paper:#f2eee5f2;--ink:#242e34;--muted:#647076;--accent:#ba706b;--accent-soft:#f3e1dd;--line:#7b858039;--ambient:#b9756c20}
+body[data-theme=connection]{--bg:#e7e0e9;--surface:#f4eef6d8;--paper:#fffafcdb;--ink:#423547;--muted:#837484;--accent:#946d92;--accent-soft:#efe2ed;--line:#8b6d8b28;--ambient:#986da23a}
+body[data-theme=origin]{--bg:#dfe6e6;--surface:#f4f5f1d8;--paper:#faf7f0e8;--ink:#293c47;--muted:#71818a;--accent:#597d89;--accent-soft:#dce9eb;--line:#687d8629;--ambient:#607f9140}
+body[data-theme=colorlab]{--bg:#eceae6;--surface:#faf9f5de;--paper:#fffdfae8;--ink:#353a3a;--muted:#777f81;--accent:#548aa0;--accent-soft:#d8e9ee;--line:#74817c29;--ambient:#a597bb38}
+body[data-theme=trial]{--bg:#e8e2df;--surface:#f6f1eeda;--paper:#fffdfaed;--ink:#372e34;--muted:#83727a;--accent:#945a65;--accent-soft:#f3e0e1;--line:#865d6729;--ambient:#955a6330}
+body[data-theme=astrology]{--bg:#292d43;--surface:#3b4056d9;--paper:#faf6eced;--ink:#303349;--muted:#7d7893;--accent:#9e8262;--accent-soft:#f0e5d2;--line:#bca98030;--ambient:#c7b88728}
+body[data-theme=evidence] .topbar,body[data-theme=astrology] .topbar,body[data-theme=evidence] .tool-rail,body[data-theme=astrology] .tool-rail,body[data-theme=evidence] .phase-bar,body[data-theme=astrology] .phase-bar{color:#ecefea}body[data-theme=evidence] .header-center,body[data-theme=evidence] .brand-type small,body[data-theme=evidence] .save-status,body[data-theme=evidence] .rail-btn,body[data-theme=evidence] .phase-end,body[data-theme=evidence] .phase-label,body[data-theme=astrology] .header-center,body[data-theme=astrology] .brand-type small,body[data-theme=astrology] .save-status,body[data-theme=astrology] .rail-btn,body[data-theme=astrology] .phase-end,body[data-theme=astrology] .phase-label{color:#c8c9ce}body[data-theme=evidence] .phase-tab,body[data-theme=astrology] .phase-tab{color:#d3d7dc}body[data-theme=evidence] .phase-tab.active,body[data-theme=astrology] .phase-tab.active{color:#30353b}body[data-theme=evidence] .workspace-prelude,body[data-theme=astrology] .workspace-prelude,body[data-theme=evidence] .below-canvas,body[data-theme=astrology] .below-canvas{color:#dce3e5}body[data-theme=evidence] .workspace-prelude .eyebrow-side,body[data-theme=astrology] .workspace-prelude .eyebrow-side,body[data-theme=evidence] .workspace-prelude .view-label,body[data-theme=astrology] .workspace-prelude .view-label,body[data-theme=evidence] .below-canvas .one-line,body[data-theme=astrology] .below-canvas .one-line,body[data-theme=evidence] .below-canvas .prompt-button,body[data-theme=astrology] .below-canvas .prompt-button{color:#ced0d6}body[data-theme=evidence] .tool-drawer,body[data-theme=astrology] .tool-drawer{--ink:#28333b;--muted:#626d72;--line:#6c707831;--paper:#fbf9f4ed;--surface:#f7f7f1;--accent-soft:#e5e9e8;background:#eeefed}
+@media(max-width:900px){.topbar{grid-template-columns:1fr auto;height:66px;padding-left:17px;padding-right:12px}.header-center{display:none}.tool-rail{flex-basis:66px;padding:16px 5px}.workspace{padding:27px 28px 28px}.phase-end,.phase-label{display:none}.phase-nav{width:min(100%,600px);margin:auto}.tool-drawer{top:66px;bottom:70px}.phase-bar{min-height:70px}.eyebrow-side{display:none}}
+@media(max-width:600px){.topbar{height:60px}.brand-type strong{font-size:17px}.brand-type small{font-size:9px}.brand-icon{width:31px;height:31px}.save-status{display:none}.mobile-hide{display:none}.content-row{position:relative}.tool-rail{flex:0 0 48px;padding:11px 4px;gap:5px}.rail-btn{height:48px;width:42px;gap:3px;font-size:0}.rail-btn span[data-icon] svg{width:19px;height:19px}.workspace{padding:20px 13px 28px}.workspace-prelude{margin-bottom:15px}.view-label{display:none}.paper-area{padding:28px 19px 12px;min-height:340px}.title-input{font-size:29px;padding:18px 0 12px}.phase-editor{font-size:15px;line-height:1.8;padding-top:17px}.footer-caption{font-size:9px}.below-canvas{flex-wrap:wrap;padding-top:12px}.one-line{font-size:10px}.phase-bar{padding:7px 7px calc(7px + env(safe-area-inset-bottom));min-height:65px}.phase-nav{gap:2px}.phase-tab{padding:7px 1px;font-size:10px;gap:2px;min-height:42px;flex-direction:column}.phase-tab-number{font-size:8px}.tool-drawer{top:60px;bottom:62px;width:min(390px,calc(100vw - 30px))}.popover-anchor{top:55px;right:9px}.drawer-head{padding:18px}.drawer-body{padding:20px}.workspace-controls .subtle-btn{font-size:0;gap:0}.workspace-controls .subtle-btn svg{width:18px;height:18px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+/* Movable scratch-note window */
+.floating-note{position:fixed;z-index:25;top:21%;right:clamp(20px,11vw,190px);width:355px;height:365px;background:var(--paper);color:var(--ink);border:1px solid var(--line);box-shadow:0 28px 70px #00000026;border-radius:15px;display:flex;flex-direction:column;overflow:hidden;backdrop-filter:blur(12px)}.floating-note-head{padding:12px 15px;display:flex;align-items:center;justify-content:space-between;cursor:grab;background:var(--accent-soft);touch-action:none}.floating-note-head>span{display:flex;align-items:center;gap:9px;letter-spacing:.1em;font-size:10px}.floating-note-head strong{font-weight:650}.floating-note-head:active{cursor:grabbing}.floating-note-head .icon-button{width:28px;height:28px}.floating-note p{font-size:11px;margin:16px 19px 0;color:var(--muted)}.floating-note textarea{background:transparent;border:none;outline:none!important;resize:none;flex:1;width:100%;padding:18px 19px;color:var(--ink);line-height:1.7}.note-bottom{padding:10px 14px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}.note-bottom span{font-size:10px;color:var(--muted)}@media(max-width:600px){.floating-note{top:auto!important;left:0!important;right:0!important;bottom:calc(62px + env(safe-area-inset-bottom))!important;width:100%;height:min(53dvh,420px);border-radius:16px 16px 0 0}.floating-note-head{touch-action:auto}}
+
+/* Keep the tool rail clickable while an overlay is open. */
+.drawer-scrim{left:77px}
+@media(max-width:900px){.drawer-scrim{left:66px}}
+@media(max-width:600px){.drawer-scrim{left:48px}.tool-drawer{width:calc(100vw - 48px)}}
+
+</style>
+<title>Laced Notes — creative workspace</title>
+</head>
+<body data-theme="corkboard">
+<div class="app-shell" id="appShell">
+  <header class="topbar">
+    <div class="brand" aria-label="Laced Notes">
+      <div class="brand-icon"><span class="brand-scribble">✳</span></div>
+      <div class="brand-type"><strong>laced<span>notes</span></strong><small>the little idea studio</small></div>
+    </div>
+    <div class="header-center"><span class="tiny-light"></span><span id="headerProject">Untitled idea</span><span class="header-sep">/</span><span id="headerPhase">Ideate</span></div>
+    <div class="header-actions">
+      <span class="save-status" id="saveStatus" aria-live="polite">Saved locally</span>
+      <button type="button" class="icon-button mobile-hide" id="focusBtn" data-tooltip="Focus mode" aria-label="Toggle focus mode" title="Focus mode"><span data-icon="maximize"></span></button>
+      <button type="button" class="icon-button" id="themeBtn" data-tooltip="Themes" aria-label="Themes" title="Themes"><span data-icon="palette"></span></button>
+      <button type="button" class="icon-button" id="opsBtn" data-tooltip="Operations" aria-label="Operations" title="Operations" aria-expanded="false"><span data-icon="more"></span></button>
+    </div>
+  </header>
+  <div class="content-row">
+    <nav class="tool-rail" aria-label="Workspace tools">
+      <button type="button" class="rail-btn" data-tool="projects" title="Projects" aria-label="Projects"><span data-icon="folder"></span><span>Projects</span></button>
+      <div class="rail-line"></div>
+      <button type="button" class="rail-btn" data-tool="palette" title="Palette" aria-label="Creative palette"><span data-icon="layers"></span><span>Palette</span></button>
+      <button type="button" class="rail-btn" data-tool="object" title="Object writing" aria-label="Object writing"><span data-icon="spark"></span><span>Object</span></button>
+      <button type="button" class="rail-btn" data-tool="words" title="Word bank" aria-label="Word bank"><span data-icon="hash"></span><span>Words</span></button>
+      <button type="button" class="rail-btn" data-tool="scratch" title="Scratch notes" aria-label="Scratch notes"><span data-icon="note"></span><span>Notes</span></button>
+      <div class="rail-spacer"></div>
+      <button type="button" class="rail-btn" data-tool="themes" title="Themes" aria-label="Themes"><span data-icon="palette"></span><span>Looks</span></button>
+    </nav>
+    <main class="main-region" id="mainRegion">
+      <div class="board-ambient" aria-hidden="true"><span class="ambient-circle"></span><span class="ambient-line"></span></div>
+      <div class="workspace" id="workspace">
+        <div class="workspace-prelude">
+          <div class="eyebrow"><span class="eyebrow-dot"></span> <span id="phaseEyebrow">02 / IDEATE</span> <span class="eyebrow-side">A PLACE TO THINK MESSILY</span></div>
+          <div class="workspace-controls">
+            <span class="view-label">WORKSPACE</span>
+            <button type="button" class="subtle-btn" id="newProjectBtn"><span data-icon="plus"></span><span>New project</span></button>
+          </div>
+        </div>
+        <div class="paper-area">
+          <div class="editor-topline"><span class="tiny-dash"></span><span>WORKING DRAFT</span><span class="editor-topline-right" id="wordCount">0 words</span></div>
+          <input id="titleInput" class="title-input" type="text" maxlength="120" aria-label="Project title" spellcheck="true" placeholder="Untitled idea" autocomplete="off">
+          <label class="sr-only" for="phaseEditor">Writing area</label>
+          <textarea id="phaseEditor" class="phase-editor" placeholder="Begin anywhere. Nothing has to be good yet." spellcheck="true"></textarea>
+          <div class="editor-footer">
+            <span class="footer-caption" id="phaseHint">Gather an angle, a tension, a question, a fragment.</span>
+            <button type="button" class="inline-action" id="scratchShortcut"><span data-icon="note"></span> Scratch note <span data-icon="arrow"></span></button>
+          </div>
+        </div>
+        <div class="below-canvas">
+          <div class="one-line"><span data-icon="spark"></span><span id="promptLine">A small starting point is still a starting point.</span></div>
+          <button type="button" id="ideaBtn" class="prompt-button"><span data-icon="refresh"></span> New nudge</button>
+        </div>
+      </div>
+    </main>
+  </div>
+  <footer class="phase-bar" aria-label="Songwriting workflow">
+    <span class="phase-label">YOUR PROCESS</span>
+    <nav id="phaseNav" class="phase-nav" aria-label="Song phases"></nav>
+    <span class="phase-end">MAKE SPACE FOR THE MESS.</span>
+  </footer>
+</div>
+<div id="popAnchor" class="popover-anchor" hidden><div class="pop-title">QUICK OPERATIONS</div><button data-action="new"><span data-icon="plus"></span> New project</button><button data-action="rename"><span data-icon="edit"></span> Rename</button><button data-action="duplicate"><span data-icon="copy"></span> Duplicate project</button><button data-action="exportText"><span data-icon="download"></span> Export lyrics (.txt)</button><button data-action="export"><span data-icon="download"></span> Backup all projects (.json)</button><button data-action="import"><span data-icon="upload"></span> Import backup</button><div class="pop-divider"></div><button class="danger" data-action="delete"><span data-icon="trash"></span> Delete current project</button></div>
+<div id="drawerScrim" class="drawer-scrim" hidden></div>
+<aside id="toolDrawer" class="tool-drawer" role="dialog" aria-modal="false" aria-labelledby="drawerTitle" aria-hidden="true"><div class="drawer-head"><div><div class="mini-caption" id="drawerKicker">TOOLS / 01</div><h2 id="drawerTitle">Tools</h2></div><button type="button" class="icon-button" id="closeDrawer" aria-label="Close panel"><span data-icon="x"></span></button></div><div id="drawerBody" class="drawer-body"></div></aside>
+<div class="modal-scrim" id="modalScrim" hidden><section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal-head"><h2 id="modalTitle">New project</h2><button class="icon-button" id="modalX" aria-label="Close dialog"><span data-icon="x"></span></button></div><p id="modalDescription">Give the idea somewhere to live.</p><label class="field-label" for="modalInput" id="modalLabel">Project name</label><input id="modalInput" type="text" maxlength="120" placeholder="Something worth keeping" autocomplete="off"><div class="modal-actions"><button class="soft-btn" id="modalCancel">Cancel</button><button class="primary-btn" id="modalConfirm">Create project</button></div></section></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<input type="file" id="importInput" hidden accept="application/json,.json">
+<script>
+/* Laced Notes v1: local-first personal songwriting workspace. No external services. */
+(() => {
+'use strict';
+const STORE_KEY='laced-notes-v1';
+const PHASES=[
+ {id:'collect',label:'Collect',hint:'Capture the fragments before you explain them.',placeholder:'A sentence. A memory. An overheard phrase. Collect first, judge later.'},
+ {id:'ideate',label:'Ideate',hint:'Gather an angle, a tension, a question, a fragment.',placeholder:'Begin anywhere. Nothing has to be good yet.'},
+ {id:'seed',label:'Seed',hint:'What is the one thing the song cannot stop circling?',placeholder:'Central idea, emotional contradiction, narrator, and what changes...'},
+ {id:'start',label:'Start',hint:'Put real lines down. Imperfect counts.',placeholder:'[Verse 1]\n\n[Pre-Chorus]\n\n[Chorus]'},
+ {id:'iterate',label:'Iterate',hint:'Keep the strange part. Change what gets in its way.',placeholder:'Try another line, another perspective, or a counter-argument...'}
+];
+const THEMES=[
+ {id:'corkboard',name:'Corkboard Studio',subtitle:'Warm paper · muted color tabs',color:'#b68655'},
+ {id:'evidence',name:'Evidence Board',subtitle:'Graphite · desaturated red',color:'#343e42'},
+ {id:'connection',name:'Connection Web',subtitle:'Soft lilac · dusty rose',color:'#946d92'},
+ {id:'origin',name:'Origin Detective',subtitle:'Archive blue · parchment',color:'#597d89'},
+ {id:'colorlab',name:'Living Color Lab',subtitle:'Quiet neutrals · color accents',color:'#548aa0'},
+ {id:'trial',name:'Put It on Trial',subtitle:'Editorial charcoal · oxblood',color:'#945a65'},
+ {id:'astrology',name:'Astrology Atlas',subtitle:'Midnight indigo · old gold',color:'#292d43'}
+];
+const PROMPTS=[
+ 'What does the speaker insist is true, and what quietly disproves it?',
+ 'Write the moment just before someone finally says what they mean.',
+ 'Find a physical object that could carry this feeling.',
+ 'What would this idea sound like if the opposite were true?',
+ 'Use one ordinary detail to reveal the whole conflict.',
+ 'Try a first line that sounds certain, then make the next one doubt it.',
+ 'Which sentence would the narrator be embarrassed to admit?',
+ 'Describe the feeling without using its name.',
+ 'Write something tender, then give it an unexpected edge.',
+ 'If this idea were a place, what would be left behind there?'
+];
+const OBJECT_PROMPTS=[
+ 'A receipt found inside a coat pocket',
+ 'A cracked bathroom mirror',
+ 'An old answering machine',
+ 'A house key that opens nothing',
+ 'The half-erased sentence on a chalkboard',
+ 'An unsent birthday card',
+ 'A wristwatch that has stopped',
+ 'A torn ticket stub',
+ 'An empty chair at a crowded table',
+ 'A window that won’t quite close',
+ 'The last page of an instruction manual',
+ 'A candle with a burned-down wick'
+];
+const paletteDefaults={
+ 'Emotional temperature':['aching','tender','restless','defiant','hopeful'],
+ 'Narrative lens':['confessional','observational','unreliable','ritualistic'],
+ 'Contrast':['soft vs sharp','certainty vs doubt','desire vs distance']
+};
+const iconPaths={
+ maximize:'<path d="M8 3H4a1 1 0 0 0-1 1v4m0-5 6 6M16 21h4a1 1 0 0 0 1-1v-4m0 5-6-6M21 8V4a1 1 0 0 0-1-1h-4m5 0-6 6M3 16v4a1 1 0 0 0 1 1h4m-5 0 6-6"/>',
+ palette:'<circle cx="12" cy="12" r="9"/><circle cx="7.5" cy="12" r="1"/><circle cx="10.5" cy="7.5" r="1"/><circle cx="15" cy="7.5" r="1"/><path d="M20.7 13.5c-1.7-1-4 0-4 2s.5 2.1-.5 3.5"/>',
+ more:'<circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/>',
+ folder:'<path d="M3 7a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v10H3z"/>',
+ layers:'<path d="m12 2 9 5-9 5-9-5 9-5Zm-9 10 9 5 9-5M3 17l9 5 9-5"/>',
+ spark:'<path d="m12 2 1.8 6.2L20 10l-6.2 1.8L12 18l-1.8-6.2L4 10l6.2-1.8L12 2ZM19 17l.7 2.3L22 20l-2.3.7L19 23l-.7-2.3L16 20l2.3-.7L19 17Z"/>',
+ hash:'<path d="M4 9h16M3 15h16M11 3 7 21M17 3l-4 18"/>',
+ note:'<path d="M5 3h14v13l-5 5H5z"/><path d="M14 21v-5h5M8 8h8M8 12h8"/>',
+ plus:'<path d="M12 5v14M5 12h14"/>',
+ arrow:'<path d="M5 12h14m-7-7 7 7-7 7"/>',
+ x:'<path d="M18 6 6 18M6 6l12 12"/>',
+ edit:'<path d="m16 4 4 4-12 12H4v-4L16 4ZM14 6l4 4"/>',
+ copy:'<rect x="8" y="8" width="13" height="13" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/>',
+ download:'<path d="M12 3v12m-4-4 4 4 4-4M4 17v4h16v-4"/>',
+ upload:'<path d="M12 16V4M8 8l4-4 4 4M4 17v4h16v-4"/>',
+ trash:'<path d="M4 7h16M10 4h4m-7 3 1 14h8l1-14M10 11v6m4-6v6"/>',
+ refresh:'<path d="M20 7v5h-5M4 17v-5h5M5.7 9A7 7 0 0 1 18 7l2 5M4 12l2 5A7 7 0 0 0 18.3 15"/>',
+ check:'<path d="m5 12 5 5L20 7"/>',
+ book:'<path d="M4 4h14v16H6a2 2 0 0 1-2-2V4Zm0 14c0-1 1-2 3-2h11"/>',
+ save:'<path d="M4 4h14l2 2v14H4zM8 4v6h8V4M8 20v-7h8v7"/>',
+ pin:'<path d="m16 3 5 5-4 1-4 4-2 8-2-7-6-2 8-2 4-4 1-3Z"/>'
+};
+const ico=(name)=>`<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${iconPaths[name]||iconPaths.spark}</svg>`;
+const $=sel=>document.querySelector(sel);
+const $$=sel=>[...document.querySelectorAll(sel)];
+const esc=str=>String(str??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;');
+const id=()=> (typeof crypto!=='undefined'&&crypto.randomUUID ? crypto.randomUUID() : 'p'+Date.now()+'-'+Math.random().toString(36).slice(2));
+const freshProject=(title='Untitled idea')=>({id:id(),title,stages:Object.fromEntries(PHASES.map(p=>[p.id,''])),scratch:'',words:[],palette:structuredClone(paletteDefaults),createdAt:Date.now(),updatedAt:Date.now()});
+const freshState=()=>{let p=freshProject();return{version:1,activeId:p.id,phase:'ideate',theme:'corkboard',projects:[p]};};
+let state,tool='',modalMode='',saveTimer,toastTimer,nudgeIndex=0,objectIndex=0,prevFocus=null;
+try{const saved=JSON.parse(localStorage.getItem(STORE_KEY));state=saved&&saved.version===1&&Array.isArray(saved.projects)&&saved.projects.length?saved:freshState();}catch{state=freshState();}
+if(!THEMES.some(t=>t.id===state.theme))state.theme='corkboard';
+if(!PHASES.some(p=>p.id===state.phase))state.phase='ideate';
+if(!state.projects.some(p=>p.id===state.activeId))state.activeId=state.projects[0].id;
+const proj=()=>state.projects.find(p=>p.id===state.activeId);
+function persist(){const p=proj();if(p)p.updatedAt=Date.now();$('#saveStatus').textContent='Saving…';clearTimeout(saveTimer);saveTimer=setTimeout(()=>{try{localStorage.setItem(STORE_KEY,JSON.stringify(state));$('#saveStatus').textContent='Saved locally';}catch(e){$('#saveStatus').textContent='Storage unavailable';showToast('Local save failed. Export a backup before leaving.');}},250)}
+function flushSave(){clearTimeout(saveTimer);try{localStorage.setItem(STORE_KEY,JSON.stringify(state));$('#saveStatus').textContent='Saved locally'}catch(e){$('#saveStatus').textContent='Storage unavailable'}}
+function showToast(message){const e=$('#toast');e.textContent=message;e.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>e.classList.remove('show'),2600)}
+function setTheme(theme){if(!THEMES.some(t=>t.id===theme))return;state.theme=theme;document.body.dataset.theme=theme;persist();if(tool==='themes')renderDrawer();showToast(`${THEMES.find(t=>t.id===theme).name} applied`)}
+function updateCount(){const value=$('#phaseEditor').value;$('#wordCount').textContent=`${(value.trim().match(/\S+/g)||[]).length} words`}
+function renderCore(){const p=proj(),phase=PHASES.find(p=>p.id===state.phase);if(!p)return;document.body.dataset.theme=state.theme;$('#headerProject').textContent=p.title;$('#headerPhase').textContent=phase.label;$('#phaseEyebrow').textContent=`0${PHASES.indexOf(phase)+1} / ${phase.label.toUpperCase()}`;$('#titleInput').value=p.title==='Untitled idea'?'':p.title;$('#phaseEditor').value=p.stages?.[state.phase]||'';$('#phaseEditor').placeholder=phase.placeholder;$('#phaseHint').textContent=phase.hint;updateCount();$('#phaseNav').innerHTML=PHASES.map((item,i)=>`<button type="button" class="phase-tab ${item.id===state.phase?'active':''}" data-phase="${item.id}" ${item.id===state.phase?'aria-current="step"':''}><span class="phase-tab-number">0${i+1}</span>${item.label}</button>`).join('')}
+function setPhase(p){if(!PHASES.some(x=>x.id===p))return;state.phase=p;renderCore();persist();$('#phaseEditor').focus({preventScroll:true})}
+function setProject(p){state.activeId=p;closeDrawer();renderCore();persist()}
+function closePopover(){$('#popAnchor').hidden=true;$('#opsBtn').setAttribute('aria-expanded','false')}
+function openPopover(){const p=$('#popAnchor');const shouldOpen=p.hidden;closeDrawer();p.hidden=!shouldOpen;$('#opsBtn').setAttribute('aria-expanded',String(shouldOpen))}
+function openDrawer(name){if(name==='scratch'){openFloatingNote();return;}if(tool===name){closeDrawer();return;}closeFloatingNote();closePopover();tool=name;prevFocus=document.activeElement;$('#toolDrawer').classList.add('open');$('#toolDrawer').setAttribute('aria-hidden','false');$('#drawerScrim').hidden=false;$$('.rail-btn').forEach(b=>b.classList.toggle('active',b.dataset.tool===name));renderDrawer();$('#closeDrawer').focus({preventScroll:true});}
+function closeDrawer(){tool='';$('#toolDrawer').classList.remove('open');$('#toolDrawer').setAttribute('aria-hidden','true');$('#drawerScrim').hidden=true;$$('.rail-btn').forEach(b=>b.classList.remove('active'))}
+function drawerInfo(title,kicker){$('#drawerTitle').textContent=title;$('#drawerKicker').textContent=kicker}
+function renderDrawer(){const p=proj(),body=$('#drawerBody');if(!p)return;
+ if(tool==='projects'){drawerInfo('Your projects','LIBRARY / LOCAL');body.innerHTML=`<p class="drawer-intro">Every idea has its own five stages, scratch notes and word bank. Nothing leaves this device.</p><button class="primary-btn" data-act="new-project">${ico('plus')} New project</button><div class="drawer-section" style="margin-top:22px"><div class="section-kicker">PROJECTS · ${state.projects.length}</div>${[...state.projects].sort((a,b)=>b.updatedAt-a.updatedAt).map(q=>`<button class="tool-tile project-tile ${q.id===p.id?'selected':''}" data-project="${esc(q.id)}"><span class="project-icon">${ico('book')}</span><span><strong>${esc(q.title)}</strong><small>${new Date(q.updatedAt).toLocaleDateString()} · ${Object.values(q.stages||{}).join(' ').trim().split(/\s+/).filter(Boolean).length} words</small></span></button>`).join('')}</div><div class="drawer-section"><button class="soft-btn" data-act="backup">${ico('download')} Back up library</button></div>`;
+ }else if(tool==='palette'){drawerInfo('Creative palette','IDEATE / CUSTOM CHOICES');body.innerHTML=`<p class="drawer-intro">Your own categories and choices. Add, rename, or remove anything. Tap a chip to insert it into your current draft.</p><div class="drawer-section"><label class="field-label" for="categoryName">Create category</label><div class="inline-field"><input id="categoryName" maxlength="48" type="text" placeholder="e.g. Humor lens"><button class="primary-btn" data-act="add-category">${ico('plus')}</button></div></div>${Object.entries(p.palette||{}).map(([group,values],i)=>`<section class="drawer-section" data-category="${esc(group)}"><div class="row-between"><span class="group-name">${esc(group)}</span><span><button class="tiny-btn" data-act="rename-category" data-group="${esc(group)}">Rename</button><button class="tiny-btn" data-act="remove-category" data-group="${esc(group)}">Remove</button></span></div><div class="tag-row">${values.map((word,n)=>`<span class="tag"><button title="Insert into draft" data-act="insert-palette" data-group="${esc(group)}" data-index="${n}">${esc(word)}</button><button title="Remove choice" aria-label="Remove ${esc(word)}" data-act="remove-option" data-group="${esc(group)}" data-index="${n}">×</button></span>`).join('')||'<span class="field-label">No choices yet</span>'}</div><div class="inline-field"><input type="text" maxlength="80" data-option-input="${esc(group)}" placeholder="Add your own choice"><button class="soft-btn" data-act="add-option" data-group="${esc(group)}">Add</button></div></section>`).join('')}`;
+ }else if(tool==='object'){drawerInfo('Object writing','IDEATE / SENSORY DETAILS');body.innerHTML=`<p class="drawer-intro">Use one physical object as an entry point. Write through its texture, weight, sound, memory, or contradiction.</p><div class="section-kicker">TODAY'S OBJECT</div><div class="writing-prompt" id="objectPrompt">${esc(OBJECT_PROMPTS[objectIndex%OBJECT_PROMPTS.length])}</div><div class="row-between"><button class="soft-btn" data-act="random-object">${ico('refresh')} Another object</button><button class="primary-btn" data-act="insert-object">${ico('plus')} Use in draft</button></div><div class="tool-tile" style="margin-top:25px"><div class="section-kicker">START HERE</div><p style="font-size:13px;line-height:1.8;margin:0">What does it feel like? What happened to it? What does someone refuse to throw away? Write a concrete detail before deciding what it symbolizes.</p></div>`;
+ }else if(tool==='words'){drawerInfo('Word bank','PROJECT / SAVED WORDS');body.innerHTML=`<p class="drawer-intro">Collect words that have something to do with this song. They're saved with the project, not lost between drafts.</p><div class="inline-field"><input id="wordInput" maxlength="80" type="text" placeholder="Enter a word or phrase"><button class="primary-btn" data-act="add-word">${ico('plus')} Add</button></div><div class="section-kicker" style="margin-top:25px">SAVED WORDS</div><div class="tag-row">${(p.words||[]).map((word,i)=>`<span class="tag"><button data-act="insert-word" data-index="${i}" title="Insert into draft">${esc(word)}</button><button data-act="remove-word" data-index="${i}" title="Remove word">×</button></span>`).join('')||'<p class="drawer-intro">No saved words yet. Try the first one that keeps returning to your mind.</p>'}</div>`;
+ }else if(tool==='themes'){drawerInfo('A change of atmosphere','APPEARANCE / SEVEN THEMES');body.innerHTML=`<p class="drawer-intro">Same quiet workspace. Different material, light, and personality. Theme changes never touch the writing.</p>${THEMES.map(t=>`<button class="theme-option ${t.id===state.theme?'selected':''}" data-theme-choice="${t.id}"><span class="row-between" style="gap:12px"><span class="theme-preview" style="background:${t.color}"></span><span><strong style="font-size:12px">${t.name}</strong><small>${t.subtitle}</small></span></span>${t.id===state.theme?ico('check'):''}</button>`).join('')}`;
+ }}
+function insertAtCursor(text){const area=$('#phaseEditor');let a=area.selectionStart??area.value.length,b=area.selectionEnd??a;let before=area.value.slice(0,a),after=area.value.slice(b);let content=text; if(before&&!/\s$/.test(before))content=' '+content;area.value=before+content+after;let at=(before+content).length;area.focus();area.setSelectionRange(at,at);proj().stages[state.phase]=area.value;updateCount();persist();showToast('Added to draft')}
+function withCategory(group,cb){const p=proj();if(!p.palette||!Object.prototype.hasOwnProperty.call(p.palette,group))return;cb(p.palette[group]);persist();renderDrawer()}
+function openModal(mode){modalMode=mode;closePopover();closeDrawer();const m=$('#modalScrim'),title=$('#modalTitle'),description=$('#modalDescription'),field=$('#modalInput'),confirm=$('#modalConfirm');field.style.display='';$('#modalLabel').style.display='';if(mode==='new'){title.textContent='New project';description.textContent='Give the idea somewhere to live.';field.value='';confirm.textContent='Create project';}else if(mode==='rename'){title.textContent='Rename project';description.textContent='A working title is allowed to change.';field.value=proj().title;confirm.textContent='Save name';}else if(mode==='delete'){title.textContent='Delete this project?';description.textContent=`“${proj().title}” and all its drafts will be permanently removed from this device. Export a backup first if you want to keep it.`;field.style.display='none';$('#modalLabel').style.display='none';confirm.textContent='Delete project';}m.hidden=false;setTimeout(()=>mode==='delete'?confirm.focus():field.focus(),0)}
+function closeModal(){$('#modalScrim').hidden=true;modalMode=''}
+function modalConfirm(){if(modalMode==='new'){let name=$('#modalInput').value.trim()||'Untitled idea';let p=freshProject(name);state.projects.push(p);state.activeId=p.id;state.phase='ideate';persist();renderCore();showToast('New project created');}else if(modalMode==='rename'){proj().title=$('#modalInput').value.trim()||'Untitled idea';persist();renderCore();showToast('Name updated');}else if(modalMode==='delete'){const old=state.activeId;state.projects=state.projects.filter(p=>p.id!==old);if(!state.projects.length)state.projects.push(freshProject());state.activeId=state.projects[0].id;persist();renderCore();showToast('Project deleted')}closeModal()}
+function download(name,content,type){const blob=new Blob([content],{type});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),3000)}
+function safeFilename(s){return s.replace(/[^a-zA-Z0-9 _-]/g,'').trim().replace(/\s+/g,'_').slice(0,54)||'untitled'}
+function backup(){flushSave();download('Laced_Notes_Backup_'+new Date().toISOString().slice(0,10)+'.json',JSON.stringify({...state,exportedAt:new Date().toISOString()},null,2),'application/json');showToast('Backup downloaded')}
+function exportText(){const p=proj();const text=`${p.title}\n\n${PHASES.map(ph=>`${ph.label.toUpperCase()}\n\n${p.stages?.[ph.id]||''}`).join('\n\n'+'─'.repeat(20)+'\n\n')}\n\nSCRATCH NOTES\n\n${p.scratch||''}\n\nWORD BANK\n\n${(p.words||[]).join(', ')}`;download(safeFilename(p.title)+'.txt',text,'text/plain;charset=utf-8');showToast('Text export downloaded')}
+function normalizeImportedProject(p){if(!p||typeof p!=='object'||typeof p.title!=='string')return null;let q=freshProject(p.title.slice(0,120));for(const ph of PHASES)if(typeof p.stages?.[ph.id]==='string')q.stages[ph.id]=p.stages[ph.id].slice(0,400000);q.scratch=typeof p.scratch==='string'?p.scratch.slice(0,400000):'';q.words=Array.isArray(p.words)?p.words.filter(w=>typeof w==='string').slice(0,1000):[];if(p.palette&&typeof p.palette==='object'&&!Array.isArray(p.palette)){q.palette={};for(const [k,v] of Object.entries(p.palette).slice(0,100)){if(typeof k==='string'&&Array.isArray(v))q.palette[k.slice(0,80)]=v.filter(w=>typeof w==='string').slice(0,100).map(w=>w.slice(0,120));}}return q}
+async function importBackup(file){try{if(!file||file.size>15000000)throw Error('Choose a backup smaller than 15 MB.');let data=JSON.parse(await file.text());if(!data||!Array.isArray(data.projects)||!data.projects.length||data.projects.length>1000)throw Error('This is not a valid Laced Notes backup.');const incoming=data.projects.map(normalizeImportedProject).filter(Boolean);if(!incoming.length)throw Error('No usable projects were found.');state.projects.push(...incoming);state.activeId=incoming[0].id;flushSave();renderCore();closeDrawer();showToast(`Imported ${incoming.length} project${incoming.length===1?'':'s'} as copies`)}catch(e){showToast('Import failed: '+e.message)}$('#importInput').value=''}
+function doAction(action){switch(action){case 'new':case 'new-project':openModal('new');break;case 'rename':openModal('rename');break;case 'duplicate':{const p=normalizeImportedProject(proj());p.title+=' (copy)';state.projects.push(p);state.activeId=p.id;persist();renderCore();closePopover();showToast('Project duplicated');break}case 'delete':openModal('delete');break;case 'export':case 'backup':closePopover();backup();break;case 'exportText':closePopover();exportText();break;case 'import':closePopover();$('#importInput').click();break;}}
+/* Floating, movable scratch note; slides into a bottom sheet on small viewports. */
+const note=document.createElement('div');note.className='floating-note';note.id='floatingNote';note.hidden=true;note.innerHTML=`<div class="floating-note-head" id="noteDrag"><span>${ico('note')} <strong>SCRATCH NOTE</strong></span><button class="icon-button" id="noteX" aria-label="Close scratch note">${ico('x')}</button></div><p>Thoughts that aren't ready for the main draft.</p><textarea id="scratchEditor" aria-label="Scratch note" placeholder="Keep the half-formed thought..." spellcheck="true"></textarea><div class="note-bottom"><span id="noteSave">Saved locally</span><button class="soft-btn" id="scratchToDraft">${ico('arrow')} Add to draft</button></div>`;document.body.appendChild(note);
+function openFloatingNote(){closeDrawer();closePopover();note.hidden=false;$('#scratchEditor').value=proj().scratch||'';$('#scratchEditor').focus({preventScroll:true});$$('.rail-btn').forEach(b=>b.classList.toggle('active',b.dataset.tool==='scratch'));}
+function closeFloatingNote(){note.hidden=true;$$('.rail-btn').filter(b=>b.dataset.tool==='scratch').forEach(b=>b.classList.remove('active'))}
+let drag=null;$('#noteDrag').addEventListener('pointerdown',e=>{if(e.target.closest('button')||window.innerWidth<600)return;drag={x:e.clientX,y:e.clientY,left:note.getBoundingClientRect().left,top:note.getBoundingClientRect().top};$('#noteDrag').setPointerCapture(e.pointerId)});
+$('#noteDrag').addEventListener('pointermove',e=>{if(!drag)return;const left=Math.min(window.innerWidth-160,Math.max(0,drag.left+e.clientX-drag.x));const top=Math.min(window.innerHeight-100,Math.max(0,drag.top+e.clientY-drag.y));note.style.left=left+'px';note.style.top=top+'px';note.style.right='auto';note.style.bottom='auto'});
+$('#noteDrag').addEventListener('pointerup',()=>drag=null);
+$('#noteX').addEventListener('click',closeFloatingNote);
+$('#scratchEditor').addEventListener('input',e=>{proj().scratch=e.target.value;$('#noteSave').textContent='Saving…';persist();setTimeout(()=>$('#noteSave').textContent='Saved locally',350)});
+$('#scratchToDraft').addEventListener('click',()=>{let s=$('#scratchEditor').value.trim();if(!s)return showToast('Scratch note is empty');insertAtCursor('\n'+s+'\n')});
+function onDrawerClick(e){const theme=e.target.closest('[data-theme-choice]');if(theme){setTheme(theme.dataset.themeChoice);return}const project=e.target.closest('[data-project]');if(project){setProject(project.dataset.project);return}const act=e.target.closest('[data-act]');if(!act)return;const a=act.dataset.act,g=act.dataset.group,index=Number(act.dataset.index),p=proj();if(['new-project','backup'].includes(a))return doAction(a);
+ if(a==='add-category'){const el=$('#categoryName');const name=el.value.trim();if(!name)return;if(Object.keys(p.palette).some(x=>x.toLowerCase()===name.toLowerCase()))return showToast('Category already exists');p.palette[name]=[];persist();renderDrawer();showToast('Category created')}
+ if(a==='rename-category'){const newName=prompt('Rename category:',g);if(!newName||newName.trim()===g)return;const name=newName.trim().slice(0,48);if(p.palette[name])return showToast('Category already exists');p.palette=Object.fromEntries(Object.entries(p.palette).map(([key,value])=>[key===g?name:key,value]));persist();renderDrawer()}
+ if(a==='remove-category'){if(confirm(`Remove “${g}” and its choices?`)){delete p.palette[g];persist();renderDrawer()}}
+ if(a==='add-option'){const input=$$('[data-option-input]').find(el=>el.dataset.optionInput===g);const v=input?.value.trim();if(!v)return;withCategory(g,arr=>{if(!arr.includes(v))arr.push(v)})}
+ if(a==='remove-option')withCategory(g,arr=>arr.splice(index,1));
+ if(a==='insert-palette'){const choice=p.palette[g]?.[index];if(choice)insertAtCursor(choice)}
+ if(a==='random-object'){objectIndex=(objectIndex+1)%OBJECT_PROMPTS.length;$('#objectPrompt').textContent=OBJECT_PROMPTS[objectIndex]}
+ if(a==='insert-object')insertAtCursor(OBJECT_PROMPTS[objectIndex]);
+ if(a==='add-word'){const v=$('#wordInput')?.value.trim();if(!v)return;if(!p.words.includes(v))p.words.push(v);persist();renderDrawer()}
+ if(a==='remove-word'){p.words.splice(index,1);persist();renderDrawer()}
+ if(a==='insert-word'){if(p.words[index])insertAtCursor(p.words[index])}
+}
+function populateIcons(){$$('[data-icon]').forEach(el=>el.innerHTML=ico(el.dataset.icon))}
+function startup(){populateIcons();renderCore();document.body.dataset.theme=state.theme;
+ $('#titleInput').addEventListener('input',e=>{const val=e.target.value;proj().title=val.trim()||'Untitled idea';$('#headerProject').textContent=proj().title;persist()});
+ $('#titleInput').addEventListener('blur',()=>{if(!$('#titleInput').value.trim()){$('#titleInput').value='';proj().title='Untitled idea';persist()}});
+ $('#phaseEditor').addEventListener('input',e=>{proj().stages[state.phase]=e.target.value;updateCount();persist()});
+ $('#phaseNav').addEventListener('click',e=>{let b=e.target.closest('[data-phase]');if(b)setPhase(b.dataset.phase)});
+ $('#opsBtn').addEventListener('click',openPopover);
+ $('#themeBtn').addEventListener('click',()=>openDrawer('themes'));
+ $('#focusBtn').addEventListener('click',()=>{document.body.classList.toggle('focus');closeDrawer();closePopover();showToast(document.body.classList.contains('focus')?'Focus mode on':'Focus mode off')});
+ $('#newProjectBtn').addEventListener('click',()=>openModal('new'));
+ $('#scratchShortcut').addEventListener('click',openFloatingNote);
+ $('#ideaBtn').addEventListener('click',()=>{nudgeIndex=(nudgeIndex+1)%PROMPTS.length;$('#promptLine').textContent=PROMPTS[nudgeIndex]});
+ $$('.rail-btn').forEach(b=>b.addEventListener('click',()=>openDrawer(b.dataset.tool)));
+ $('#popAnchor').addEventListener('click',e=>{const btn=e.target.closest('[data-action]');if(btn)doAction(btn.dataset.action)});
+ $('#closeDrawer').addEventListener('click',closeDrawer);
+ $('#drawerScrim').addEventListener('click',closeDrawer);
+ $('#drawerBody').addEventListener('click',onDrawerClick);
+ $('#drawerBody').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches('#categoryName')){e.preventDefault();$('#drawerBody [data-act="add-category"]').click()}if(e.key==='Enter'&&e.target.matches('#wordInput')){e.preventDefault();$('#drawerBody [data-act="add-word"]').click()}if(e.key==='Enter'&&e.target.matches('[data-option-input]')){e.preventDefault();const group=e.target.dataset.optionInput;const btn=$$('[data-act="add-option"]').find(x=>x.dataset.group===group);btn?.click()}});
+ $('#modalX').addEventListener('click',closeModal);$('#modalCancel').addEventListener('click',closeModal);$('#modalConfirm').addEventListener('click',modalConfirm);$('#modalInput').addEventListener('keydown',e=>{if(e.key==='Enter')modalConfirm()});$('#modalScrim').addEventListener('click',e=>{if(e.target===$('#modalScrim'))closeModal()});
+ $('#importInput').addEventListener('change',e=>{if(e.target.files[0])importBackup(e.target.files[0])});
+ document.addEventListener('click',e=>{if(!$('#popAnchor').hidden&&!$('#popAnchor').contains(e.target)&&!$('#opsBtn').contains(e.target))closePopover()});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(!$('#modalScrim').hidden)closeModal();else if(!note.hidden)closeFloatingNote();else if(tool)closeDrawer();else closePopover()}if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='s'){e.preventDefault();flushSave();showToast('Saved locally')}});
+ window.addEventListener('beforeunload',flushSave);
+ document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')flushSave()});
+ if('serviceWorker' in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+}
+startup();
+})();
+
+</script>
+</body>
+</html>
