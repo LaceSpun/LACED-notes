@@ -34,7 +34,7 @@ if(!state.projects.some(p=>p.id===state.activeId))state.activeId=state.projects[
 if(!stages.some(s=>s[0]===state.phase))state.phase='imagine';
 if(!themes.some(t=>t[0]===state.theme))state.theme='midnight';
 if(!state.paletteTemplate||typeof state.paletteTemplate!=='object')state.paletteTemplate=defaults();
-let tool='wordverse',panelOpen=false,expTab='generate',expr={a:'',b:'',result:''},selected='',selectedStart=0,selectedEnd=0,lastStage=state.phase,toastTimer,compareId=null;
+let tool='wordverse',panelOpen=(typeof window!=='undefined'&&window.innerWidth>900),expTab='generate',expr={a:'',b:'',result:''},selected='',selectedStart=0,selectedEnd=0,caretByStage={},lastStage=state.phase,toastTimer,compareId=null;
 let root=document.createElement('div');root.id='laced-v2';root.setAttribute('data-theme',state.theme);document.body.classList.add('v2-active');document.body.appendChild(root);
 function p(){return state.projects.find(q=>q.id===state.activeId)||state.projects[0]}
 function save(){p().updatedAt=Date.now();state.updatedAt=Date.now();try{localStorage.setItem(KEY,JSON.stringify(state));const el=root.querySelector('#v2-save');if(el)el.textContent='Saved locally';}catch(e){const el=root.querySelector('#v2-save');if(el)el.textContent='Save failed';}}
@@ -58,6 +58,7 @@ chooseTools().slice(0,5).map(([id,name])=>'<button type="button" class="'+(tool=
 '<nav class="v2-bottom" aria-label="Mobile tools"><button data-tool="blueprints">Blueprints</button><button data-tool="wordverse">Wordverse</button><button data-tool="crosswire">Crosswire</button><button data-tool="outtakes">Outtakes</button><button data-tool="circuits">The Circuits</button></nav>'+
 '<div role="status" aria-live="polite" class="v2-toast" id="v2-toast"></div>';
 renderTool();
+const c=caretByStage[p().id+':'+state.phase],editor=root.querySelector('#v2-editor');if(c&&editor){editor.setSelectionRange(Math.min(c[0],editor.value.length),Math.min(c[1],editor.value.length));}
 }
 function editorHtml(){
 const s=stages.find(x=>x[0]===state.phase)||stages[1],value=p().stages[state.phase]||'';
@@ -75,7 +76,7 @@ return '<div class="v2-editor-head">'+subtitle+'<span class="v2-mini" id="v2-cou
 '<div class="v2-editor-actions">'+btn('Save to Outtakes','save-outtake')+btn('Crosswire ↗','use-crosswire')+btn('Wordverse ↗','use-wordverse')+'</div></article>'+extra;
 }
 function openTool(t){tool=t;panelOpen=true;if(state.mode==='focus')state.mode='explore';renderTool();let w=root.querySelector('#v2-work');if(w){w.classList.add('tool-open');w.dataset.mode=state.mode;}root.querySelectorAll('[data-tool]').forEach(x=>x.classList.toggle('active',x.dataset.tool===t));}
-function markSelection(){let ta=root.querySelector('#v2-editor');if(!ta)return;selectedStart=ta.selectionStart||0;selectedEnd=ta.selectionEnd||0;selected=ta.value.slice(selectedStart,selectedEnd);}
+function markSelection(){let ta=root.querySelector('#v2-editor');if(!ta)return;selectedStart=ta.selectionStart||0;selectedEnd=ta.selectionEnd||0;selected=ta.value.slice(selectedStart,selectedEnd);caretByStage[p().id+':'+state.phase]=[selectedStart,selectedEnd];}
 function renderTool(){let titles=Object.fromEntries(chooseTools());titles.wardrobe='Wardrobe';root.querySelector('#v2-tool-title').textContent=titles[tool]||'Creative tools';let el=root.querySelector('#v2-tool-body');if(!el)return;
 switch(tool){
 case 'blueprints':el.innerHTML=blueprintsHtml();break;
@@ -145,7 +146,7 @@ if(act==='use-crosswire'||act==='use-wordverse'){markSelection();expr.a=selected
 if(act==='open-wardrobe'){openTool('wardrobe');return;}
 if(act==='open-calibration'){openTool('calibration');return;}
 if(act==='open-circuits'){openTool('circuits');return;}
-if(act==='new-project'){let title=prompt('Name your New Spark','Untitled idea');if(title===null)return;let q=newProject(title.trim()||'Untitled idea',state.paletteTemplate);state.projects.push(q);state.activeId=q.id;state.phase='cluster';save();render();toast('New Spark created');return;}
+if(act==='new-project'){let q=newProject('Untitled idea',state.paletteTemplate);state.projects.push(q);state.activeId=q.id;state.phase='cluster';panelOpen=false;save();render();root.querySelector('#v2-editor')?.focus();toast('New Spark created. Start writing.');return;}
 if(act==='rename-project'){let name=prompt('Rename this Blueprint',p().title);if(name!==null&&name.trim()){p().title=name.trim().slice(0,120);save();render();}return;}
 if(act==='duplicate-project'){let q=clone(p());q.id=uuid();q.title+=' (copy)';q.createdAt=Date.now();q.updatedAt=Date.now();state.projects.push(q);state.activeId=q.id;save();render();return;}
 if(act==='delete-project'){if(!confirm('Delete this Blueprint and all its writing? Export a backup first.'))return;let idx=state.projects.findIndex(x=>x.id===state.activeId);state.projects.splice(idx,1);if(!state.projects.length)state.projects.push(newProject('Untitled idea',state.paletteTemplate));state.activeId=state.projects[0].id;save();render();return;}
