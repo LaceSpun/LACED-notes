@@ -33,3 +33,6 @@ body.v2-active > .app-shell,body.v2-active > .floating-note,body.v2-active > #po
 .v2-editor-card{color:var(--ink2)}
 .v2-editor-card .v2-textarea,.v2-editor-card .v2-input-title{color:var(--ink2)}
 .v2-editor-card .v2-mini,.v2-editor-card .v2-textarea::placeholder{color:color-mix(in srgb,var(--ink2) 68%,transparent)}
+
+.v2-compare{display:grid;grid-template-columns:1fr;gap:10px}.v2-work[data-mode=expanded] .v2-compare{grid-template-columns:repeat(2,minmax(0,1fr))}.v2-compare .v2-area{min-height:160px}
+@media(max-width:900px){.v2-head .v2-save{display:block;font-size:9px;min-width:37px;max-width:42px;line-height:1.15}.v2-head .v2-project{max-width:76px}.v2-new-spark{display:none}.v2-compare,.v2-work[data-mode=expanded] .v2-compare{grid-template-columns:1fr}}
