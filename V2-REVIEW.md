@@ -1,6 +1,6 @@
 # Laced Notes V2 review: controlled feature branch
 
-> This is an implementation branch, **not** a production release. GitHub Pages continues to publish the \`main\` branch. Do not merge before reviewing the data safeguards and testing on an iPad.
+> This is an implementation branch, **not** a production release. GitHub Pages continues to publish the `main` branch. Do not merge before reviewing the data safeguards and testing on an iPad.
 
 ## What was implemented
 
@@ -16,21 +16,21 @@
 
 ## What was intentionally preserved
 
-The old \`index.html\` V1 implementation remains in place as a hidden fallback. V2 is loaded through \`studio-v2.js\` and \`studio-v2.css\`, isolating the upgraded app from the prior implementation.
+The old `index.html` V1 implementation remains in place as a hidden fallback. V2 is loaded through `studio-v2.js` and `studio-v2.css`, isolating the upgraded app from the prior implementation.
 
-On first launch, V2 reads \`laced-notes-v1\` and imports its projects into \`laced-notes-v2\` without deleting or overwriting the V1 key. Old stage IDs are mapped as follows:
+On first launch, V2 reads `laced-notes-v1` and imports its projects into `laced-notes-v2` without deleting or overwriting the V1 key. Old stage IDs are mapped as follows:
 
 | V1 storage | V2 result |
 | --- | --- |
-| \`stages.collect\` | \`stages.cluster\` |
-| \`stages.ideate\` | \`stages.imagine\` |
-| \`stages.seed\` | \`legacySeed\` displayed in Imagine |
-| \`stages.start\` | \`stages.ignite\` |
-| \`stages.iterate\` | \`stages.ascend\` |
-| \`scratch\` | \`legacyScratch\` displayed in Outtakes |
-| \`words\`, \`palette\` | Wordverse and Constellations collections |
+| `stages.collect` | `stages.cluster` |
+| `stages.ideate` | `stages.imagine` |
+| `stages.seed` | `legacySeed` displayed in Imagine |
+| `stages.start` | `stages.ignite` |
+| `stages.iterate` | `stages.ascend` |
+| `scratch` | `legacyScratch` displayed in Outtakes |
+| `words`, `palette` | Wordverse and Constellations collections |
 
-V2's \`stages.bloom\` begins empty, deliberately. No old writing is relabeled as a new kind of content.
+V2's `stages.bloom` begins empty, deliberately. No old writing is relabeled as a new kind of content.
 
 ## Verification status
 
@@ -38,9 +38,9 @@ V2's \`stages.bloom\` begins empty, deliberately. No old writing is relabeled as
 
 Code syntax and static asset references were checked. Migration logic was exercised with populated V1 data, including user categories, old Seed writing and scratch notes. The branch also includes reproducible Node smoke tests:
 
-\`\`\`bash
+```bash
 node --test tests/v2-smoke.test.cjs
-\`\`\`
+```
 
 These are not substitutes for a real-device test. They do not verify Safari visual layout, installed-PWA cache upgrades, file downloads, keyboard behavior, scrolling, browser storage permissions or every UI interaction.
 
@@ -65,7 +65,7 @@ These are not substitutes for a real-device test. They do not verify Safari visu
 - Song section insertion is available in Ignite; drag-to-reorder, richer section modeling and advanced analysis remain future enhancements.
 - Constellations supports creating, renaming, adding, removing and inserting options. Full option descriptions, reordering and preset combinations are not implemented.
 - An actual browser/device visual and interaction regression pass has **not** been performed in this chat.
-- The published \`main\` branch and current GitHub Pages site have not been changed.
+- The published `main` branch and current GitHub Pages site have not been changed.
 
 ## Release boundary
 
