@@ -48,7 +48,7 @@ root.innerHTML='<header class="v2-head"><div class="v2-brand">laced<em>notes</em
 '<div class="v2-spacer"></div><span class="v2-mini v2-save" id="v2-save">Saved locally</span>'+
 '<button class="v2-btn" data-act="cycle-mode" title="Switch workspace mode">'+h(state.mode==='focus'?'Focus':state.mode==='expanded'?'Expanded':'Explore')+'</button>'+
 '<button class="v2-btn" data-tool="calibration" title="Calibration">⚙</button>'+
-'<button class="v2-btn v2-btn-primary" data-act="new-project" title="New Spark">+ <span class="v2-new-spark">New Spark</span></button></header>'+
+'<button class="v2-btn v2-btn-primary" data-act="new-project" aria-label="New Spark" title="New Spark">+ <span class="v2-new-spark">New Spark</span></button></header>'+
 '<div class="v2-layout"><nav class="v2-side" aria-label="Workspace modules"><div class="v2-label">The work</div>'+
 chooseTools().slice(0,5).map(([id,name])=>'<button type="button" class="'+(tool===id?'active':'')+'" data-tool="'+id+'">'+h(name)+'</button>').join('')+
 '<div class="v2-side-bottom"></div><div class="v2-label">The system</div>'+chooseTools().slice(5).map(([id,name])=>'<button type="button" class="'+(tool===id?'active':'')+'" data-tool="'+id+'">'+h(name)+'</button>').join('')+'</nav>'+
@@ -114,7 +114,7 @@ btn('Preserve selected passage / current draft','save-outtake','v2-btn-primary')
 (p().legacyScratch?'<details class="v2-legacy"><summary>Preserved V1 scratch note</summary>'+h(p().legacyScratch)+'</details>':'')+
 (!out.length?'<div class="v2-panel"><p>No saved versions yet. Select a line in the editor and preserve it.</p></div>':'')+
 out.slice().reverse().map(x=>'<div class="v2-panel"><div class="v2-row"><strong>'+h(x.name)+'</strong><span class="v2-mini">'+h(x.stage||'idea')+'</span></div><p>'+h(x.text.slice(0,180))+'</p><div class="v2-inline"><button class="v2-btn" data-out-compare="'+h(x.id)+'">Compare</button><button class="v2-btn" data-out-copy="'+h(x.id)+'">Copy</button><button class="v2-btn" data-out-restore="'+h(x.id)+'">Replace draft…</button><button class="v2-btn" data-out-rename="'+h(x.id)+'">Rename</button><button class="v2-btn" data-out-remove="'+h(x.id)+'">Delete</button></div></div>').join('')+
-(compare?'<div class="v2-panel"><h3>Comparison: '+h(compare.name)+'</h3><p>Saved alternative</p><textarea class="v2-field v2-area" readonly>'+h(compare.text)+'</textarea><p>Current '+h(state.phase)+' writing</p><textarea class="v2-field v2-area" readonly>'+h(p().stages[state.phase])+'</textarea></div>':'');}
+(compare?'<div class="v2-panel"><h3>Comparison: '+h(compare.name)+'</h3><div class="v2-compare"><div><p>Saved alternative</p><textarea class="v2-field v2-area" readonly>'+h(compare.text)+'</textarea></div><div><p>Current '+h(state.phase)+' writing</p><textarea class="v2-field v2-area" readonly>'+h(p().stages[state.phase])+'</textarea></div></div></div>':'');}
 function circuitsHtml(){return '<p class="v2-muted">Real project operations preserved from V1, including backup and import.</p><div class="v2-panel"><h3>Blueprint actions</h3>'+
 '<div class="v2-inline">'+btn('New Spark','new-project')+btn('Rename Blueprint','rename-project')+btn('Duplicate','duplicate-project')+btn('Delete Blueprint','delete-project')+'</div></div>'+
 '<div class="v2-panel"><h3>Portable backups</h3><p>Export regularly. Data lives in the browser on this device, not on GitHub.</p>'+
