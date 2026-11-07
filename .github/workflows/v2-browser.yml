@@ -21,7 +21,8 @@ jobs:
       - name: Install isolated browser test dependencies
         run: npm install --prefix "$RUNNER_TEMP/laced-browser-deps" --no-package-lock playwright@1.58.2 axe-core@4.10.3
       - name: Install Chromium and WebKit
-        run: "$RUNNER_TEMP/laced-browser-deps/node_modules/.bin/playwright" install --with-deps chromium webkit
+        run: |
+          "$RUNNER_TEMP/laced-browser-deps/node_modules/.bin/playwright" install --with-deps chromium webkit
       - name: Existing data regressions
         run: node --test tests/v2-smoke.test.cjs
       - name: Real browser verification
