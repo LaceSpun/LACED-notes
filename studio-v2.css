@@ -36,3 +36,7 @@ body.v2-active > .app-shell,body.v2-active > .floating-note,body.v2-active > #po
 
 .v2-compare{display:grid;grid-template-columns:1fr;gap:10px}.v2-work[data-mode=expanded] .v2-compare{grid-template-columns:repeat(2,minmax(0,1fr))}.v2-compare .v2-area{min-height:160px}
 @media(max-width:900px){.v2-head .v2-save{display:block;font-size:9px;min-width:37px;max-width:42px;line-height:1.15}.v2-head .v2-project{max-width:76px}.v2-new-spark{display:none}.v2-compare,.v2-work[data-mode=expanded] .v2-compare{grid-template-columns:1fr}}
+
+/* Verification fixes: retain active-tab ink and fit every mobile module. */
+#laced-v2 .v2-tabs button.active{color:#262429}
+@media(max-width:900px){.v2-bottom button{flex:1 1 0;min-width:0;padding:6px 2px;overflow-wrap:anywhere;line-height:1.2}}

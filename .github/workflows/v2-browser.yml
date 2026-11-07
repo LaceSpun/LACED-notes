@@ -1,10 +1,6 @@
 name: V2 real browser verification
 on:
   pull_request:
-  push:
-    branches:
-      - 'feature/**'
-      - 'repair/browser-verification'
 permissions:
   contents: read
 jobs:
