@@ -1,5 +1,5 @@
 
-/* LACED Notes V2. Isolated storage and UI, keeping V1 code and data available as fallback. */
+/* LACED Notes V2. Isolated storage and UI; production V1 and its storage remain intact. */
 (function(){
 'use strict';
 const KEY='laced-notes-v2', OLD='laced-notes-v1';
@@ -11,6 +11,27 @@ const clone=x=>JSON.parse(JSON.stringify(x));
 const emptyStages=()=>Object.fromEntries(stages.map(x=>[x[0],'']));
 const defaults=()=>({'Emotional temperature':['aching','tender','restless','defiant','hopeful'],'Narrative lens':['confessional','observational','unreliable'],'Texture':['raw','spare','haunting']});
 function newProject(title,template){return {id:uuid(),title:title||'Untitled idea',stages:emptyStages(),legacySeed:'',legacyScratch:'',words:[],palette:clone(template||defaults()),outtakes:[],createdAt:Date.now(),updatedAt:Date.now()};}
+// Reject malformed backups rather than silently filtering away user material.
+function validatePalette(value){
+if(value===undefined)return;
+if(!value||typeof value!=='object'||Array.isArray(value)||Object.values(value).some(v=>!Array.isArray(v)||v.some(w=>typeof w!=='string')))throw Error('Invalid Constellations data');
+}
+function validateProjects(data,version,maxProjects=Infinity){
+if(!data||data.version!==version||!Array.isArray(data.projects)||!data.projects.length||data.projects.length>maxProjects)throw Error('Invalid backup version or project list');
+const ids=new Set();
+for(const q of data.projects){
+if(!q||typeof q.title!=='string'||typeof q.id!=='string'||!q.id||ids.has(q.id)||!q.stages||typeof q.stages!=='object'||Array.isArray(q.stages))throw Error('Invalid or duplicate Blueprint');
+ids.add(q.id);validatePalette(q.palette);
+for(const [key,value] of Object.entries(q.stages))if(typeof value!=='string'||!(version===2?stages.map(s=>s[0]):['collect','ideate','seed','start','iterate']).includes(key))throw Error('Invalid stage data');
+for(const field of version===2?['legacySeed','legacyScratch']:['scratch'])if(q[field]!==undefined&&typeof q[field]!=='string')throw Error('Invalid preserved writing');
+if(q.words!==undefined&&(!Array.isArray(q.words)||q.words.some(w=>typeof w!=='string')))throw Error('Invalid Wordverse');
+if(version===2&&q.outtakes!==undefined){
+if(!Array.isArray(q.outtakes))throw Error('Invalid Outtakes');
+const outIds=new Set();for(const o of q.outtakes){if(!o||typeof o.id!=='string'||!o.id||outIds.has(o.id)||typeof o.text!=='string'||typeof o.name!=='string')throw Error('Invalid Outtake');outIds.add(o.id);}
+}
+}
+validatePalette(data.paletteTemplate);
+}
 function fromLegacy(p){let out=newProject(p.title,p.palette&&typeof p.palette==='object'&&!Array.isArray(p.palette)?p.palette:defaults());
 out.id=typeof p.id==='string'&&p.id?p.id:uuid();out.createdAt=Number(p.createdAt)||Date.now();out.updatedAt=Number(p.updatedAt)||Date.now();const v=p.stages||{};
 out.stages.cluster=typeof v.collect==='string'?v.collect:'';
@@ -22,30 +43,69 @@ out.legacyScratch=typeof p.scratch==='string'?p.scratch:'';
 out.words=Array.isArray(p.words)?p.words.filter(x=>typeof x==='string'):[];
 return out;}
 function v2Project(p){if(!p||typeof p.title!=='string')return null;let q=newProject(p.title,p.palette&&typeof p.palette==='object'?p.palette:defaults());q.id=typeof p.id==='string'&&p.id?p.id:uuid();q.createdAt=Number(p.createdAt)||Date.now();q.updatedAt=Number(p.updatedAt)||Date.now();for(const s of stages)if(typeof p.stages?.[s[0]]==='string')q.stages[s[0]]=p.stages[s[0]];q.legacySeed=typeof p.legacySeed==='string'?p.legacySeed:'';q.legacyScratch=typeof p.legacyScratch==='string'?p.legacyScratch:'';q.words=Array.isArray(p.words)?p.words.filter(w=>typeof w==='string'):[];q.outtakes=Array.isArray(p.outtakes)?p.outtakes.filter(x=>x&&typeof x.text==='string').map(x=>({...x,id:x.id||uuid(),name:String(x.name||'Untitled alternative')})):[];return q;}
-function initState(){let old=null;try{old=JSON.parse(localStorage.getItem(OLD)||'null')}catch(e){} 
+function initState(old){
 let base={version:2,activeId:null,phase:'imagine',mode:'explore',theme:'midnight',projects:[],paletteTemplate:defaults(),updatedAt:Date.now()};
 if(old&&Array.isArray(old.projects)&&old.projects.length){base.projects=old.projects.filter(p=>p&&typeof p.title==='string').map(fromLegacy);base.activeId=base.projects.some(p=>p.id===old.activeId)?old.activeId:base.projects[0]?.id;base.phase=({collect:'cluster',ideate:'imagine',seed:'imagine',start:'ignite',iterate:'ascend'})[old.phase]||'imagine';base.theme=themes.some(t=>t[0]===old.theme)?old.theme:'midnight';base.paletteTemplate=clone(base.projects[0]?.palette||defaults());}
 if(!base.projects.length){let p=newProject('Untitled idea');base.projects=[p];base.activeId=p.id;}
 return base;
 }
-let state;try{let s=JSON.parse(localStorage.getItem(KEY)||'null');if(s&&s.version===2&&Array.isArray(s.projects)&&s.projects.length){state={...initState(),...s,projects:s.projects.map(v2Project).filter(Boolean)};}else state=initState();}catch(e){state=initState();}
+let state,lastStored,legacyRaw,startupNotice='';
+try{
+lastStored=localStorage.getItem(KEY);legacyRaw=localStorage.getItem(OLD);
+if(lastStored!==null){let data=JSON.parse(lastStored);validateProjects(data,2);state={...data,projects:data.projects.map(v2Project)};}
+else {const old=legacyRaw===null?null:JSON.parse(legacyRaw);if(old)validateProjects(old,1);else if(legacyRaw!==null)throw Error('Invalid V1 storage');state=initState(old);}
+// A V1 tab may still save after the first migration. Keep changed V1 work as
+// recovery copies, never merge over edited V2 stages or silently ignore it.
+if(legacyRaw!==null&&state.migration?.legacyRaw!==legacyRaw){
+const legacy=JSON.parse(legacyRaw);validateProjects(legacy,1);
+if(lastStored!==null){
+const previous=state.migration?.legacyRaw?JSON.parse(state.migration.legacyRaw):null;
+for(const old of legacy.projects){
+if(previous?.projects?.some(q=>JSON.stringify(q)===JSON.stringify(old)))continue;
+let q=fromLegacy(old);q.id=uuid();q.title+=' (V1 recovery)';state.projects.push(q);
+}
+startupNotice='V1 work preserved as recovery copies in Blueprints. V2 drafts were kept.';
+}
+state.migration={legacyRaw,checkedAt:Date.now()};
+}
+}catch(error){
+// Do not initialize or write anything when stored data cannot be read safely.
+const recovery=document.createElement('main');recovery.id='laced-v2';document.body.classList.add('v2-active');
+recovery.innerHTML='<h1>Writing recovery required</h1><p>Saved data could not be loaded safely. Nothing has been overwritten. Download the original storage before repairing or importing it.</p><p>'+h(error.message)+'</p><button type="button">Download original storage</button>';
+document.body.appendChild(recovery);
+recovery.querySelector('button').addEventListener('click',()=>download('Laced_Notes_Recovery.json',JSON.stringify({v2:lastStored,v1:legacyRaw},null,2),'application/json'));
+return;
+}
 if(!state.projects.length){state.projects=[newProject('Untitled idea')];state.activeId=state.projects[0].id;}
 if(!state.projects.some(p=>p.id===state.activeId))state.activeId=state.projects[0].id;
 if(!stages.some(s=>s[0]===state.phase))state.phase='imagine';
 if(!themes.some(t=>t[0]===state.theme))state.theme='midnight';
 if(!state.paletteTemplate||typeof state.paletteTemplate!=='object')state.paletteTemplate=defaults();
+let saveStatus='Not saved yet',experiments={},experimentContext=null,scrollByStage={};
+if(!['focus','explore','expanded'].includes(state.mode))state.mode='explore';
 let tool='wordverse',panelOpen=(typeof window!=='undefined'&&window.innerWidth>900),expTab='generate',expr={a:'',b:'',result:''},selected='',selectedStart=0,selectedEnd=0,caretByStage={},lastStage=state.phase,toastTimer,compareId=null;
 let root=document.createElement('div');root.id='laced-v2';root.setAttribute('data-theme',state.theme);document.body.classList.add('v2-active');document.body.appendChild(root);
 function p(){return state.projects.find(q=>q.id===state.activeId)||state.projects[0]}
-function save(){p().updatedAt=Date.now();state.updatedAt=Date.now();try{localStorage.setItem(KEY,JSON.stringify(state));const el=root.querySelector('#v2-save');if(el)el.textContent='Saved locally';}catch(e){const el=root.querySelector('#v2-save');if(el)el.textContent='Save failed';}}
-function toast(msg){const el=root.querySelector('#v2-toast');if(!el)return;el.textContent=msg;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2700);}
+function save(){
+p().updatedAt=Date.now();state.updatedAt=Date.now();
+try{
+if(localStorage.getItem(KEY)!==lastStored)throw Error('Writing changed in another tab. Export this draft, then reload.');
+if(localStorage.getItem(OLD)!==legacyRaw)throw Error('V1 changed in another tab. Export this draft, then reload to recover V1 work.');
+const raw=JSON.stringify(state);localStorage.setItem(KEY,raw);lastStored=raw;saveStatus='Saved locally';
+}catch(error){saveStatus='Save failed — '+(error.message||'storage unavailable')+'. Export a backup before leaving';}
+const el=root.querySelector('#v2-save');if(el)el.textContent=saveStatus;
+return saveStatus==='Saved locally';
+}
+function transaction(edit){const before=clone(state);try{edit();}catch(error){state=before;throw error;}if(save())return true;state=before;toast(saveStatus);return false;}
+function toast(msg){const el=root.querySelector('#v2-toast');if(!el)return;el.textContent=saveStatus.startsWith('Save failed')?saveStatus:msg;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2700);}
 function btn(label,act,klass){return '<button type="button" class="v2-btn '+(klass||'')+'" data-act="'+act+'">'+h(label)+'</button>';}
 function chooseTools(){return [['blueprints','Blueprints'],['constellations','Constellations'],['wordverse','Wordverse'],['crosswire','Crosswire'],['outtakes','Outtakes'],['circuits','The Circuits'],['calibration','Calibration']];}
 function render(){
+const context=p().id+':'+state.phase;if(experimentContext!==context){if(experimentContext)experiments[experimentContext]=expr;expr=experiments[context]||{a:'',b:'',result:''};experimentContext=context;compareId=null;}
 root.setAttribute('data-theme',state.theme);
 root.innerHTML='<header class="v2-head"><div class="v2-brand">laced<em>notes</em><small>THE LITTLE IDEA STUDIO</small></div>'+
 '<button class="v2-btn v2-btn-quiet v2-project" data-tool="blueprints" title="Switch Blueprint">'+h(p().title)+' ▾</button>'+
-'<div class="v2-spacer"></div><span class="v2-mini v2-save" id="v2-save">Saved locally</span>'+
+'<div class="v2-spacer"></div><span class="v2-mini v2-save" id="v2-save">'+h(saveStatus)+'</span>'+
 '<button class="v2-btn" data-act="cycle-mode" title="Switch workspace mode">'+h(state.mode==='focus'?'Focus':state.mode==='expanded'?'Expanded':'Explore')+'</button>'+
 '<button class="v2-btn" data-tool="calibration" title="Calibration">⚙</button>'+
 '<button class="v2-btn v2-btn-primary" data-act="new-project" aria-label="New Spark" title="New Spark">+ <span class="v2-new-spark">New Spark</span></button></header>'+
@@ -58,7 +118,7 @@ chooseTools().slice(0,5).map(([id,name])=>'<button type="button" class="'+(tool=
 '<nav class="v2-bottom" aria-label="Mobile tools"><button data-tool="blueprints">Blueprints</button><button data-tool="wordverse">Wordverse</button><button data-tool="crosswire">Crosswire</button><button data-tool="outtakes">Outtakes</button><button data-tool="circuits">The Circuits</button></nav>'+
 '<div role="status" aria-live="polite" class="v2-toast" id="v2-toast"></div>';
 renderTool();
-const c=caretByStage[p().id+':'+state.phase],editor=root.querySelector('#v2-editor');if(c&&editor){editor.setSelectionRange(Math.min(c[0],editor.value.length),Math.min(c[1],editor.value.length));}
+const c=caretByStage[p().id+':'+state.phase]||[0,0],editor=root.querySelector('#v2-editor');selectedStart=Math.min(c[0],editor?.value.length||0);selectedEnd=Math.min(c[1],editor?.value.length||0);selected=(editor?.value||'').slice(selectedStart,selectedEnd);if(editor){editor.setSelectionRange(selectedStart,selectedEnd);editor.scrollTop=scrollByStage[p().id+':'+state.phase]||0;}
 }
 function editorHtml(){
 const s=stages.find(x=>x[0]===state.phase)||stages[1],value=p().stages[state.phase]||'';
@@ -76,7 +136,7 @@ return '<div class="v2-editor-head">'+subtitle+'<span class="v2-mini" id="v2-cou
 '<div class="v2-editor-actions">'+btn('Save to Outtakes','save-outtake')+btn('Crosswire ↗','use-crosswire')+btn('Wordverse ↗','use-wordverse')+'</div></article>'+extra;
 }
 function openTool(t){tool=t;panelOpen=true;if(state.mode==='focus')state.mode='explore';renderTool();let w=root.querySelector('#v2-work');if(w){w.classList.add('tool-open');w.dataset.mode=state.mode;}root.querySelectorAll('[data-tool]').forEach(x=>x.classList.toggle('active',x.dataset.tool===t));}
-function markSelection(){let ta=root.querySelector('#v2-editor');if(!ta)return;selectedStart=ta.selectionStart||0;selectedEnd=ta.selectionEnd||0;selected=ta.value.slice(selectedStart,selectedEnd);caretByStage[p().id+':'+state.phase]=[selectedStart,selectedEnd];}
+function markSelection(){let ta=root.querySelector('#v2-editor');if(!ta)return;scrollByStage[p().id+':'+state.phase]=ta.scrollTop;selectedStart=ta.selectionStart||0;selectedEnd=ta.selectionEnd||0;selected=ta.value.slice(selectedStart,selectedEnd);caretByStage[p().id+':'+state.phase]=[selectedStart,selectedEnd];}
 function renderTool(){let titles=Object.fromEntries(chooseTools());titles.wardrobe='Wardrobe';root.querySelector('#v2-tool-title').textContent=titles[tool]||'Creative tools';let el=root.querySelector('#v2-tool-body');if(!el)return;
 switch(tool){
 case 'blueprints':el.innerHTML=blueprintsHtml();break;
@@ -113,8 +173,8 @@ function outtakesHtml(){const out=p().outtakes||[];let compare=out.find(x=>x.id=
 btn('Preserve selected passage / current draft','save-outtake','v2-btn-primary')+
 (p().legacyScratch?'<details class="v2-legacy"><summary>Preserved V1 scratch note</summary>'+h(p().legacyScratch)+'</details>':'')+
 (!out.length?'<div class="v2-panel"><p>No saved versions yet. Select a line in the editor and preserve it.</p></div>':'')+
-out.slice().reverse().map(x=>'<div class="v2-panel"><div class="v2-row"><strong>'+h(x.name)+'</strong><span class="v2-mini">'+h(x.stage||'idea')+'</span></div><p>'+h(x.text.slice(0,180))+'</p><div class="v2-inline"><button class="v2-btn" data-out-compare="'+h(x.id)+'">Compare</button><button class="v2-btn" data-out-copy="'+h(x.id)+'">Copy</button><button class="v2-btn" data-out-restore="'+h(x.id)+'">Replace draft…</button><button class="v2-btn" data-out-rename="'+h(x.id)+'">Rename</button><button class="v2-btn" data-out-remove="'+h(x.id)+'">Delete</button></div></div>').join('')+
-(compare?'<div class="v2-panel"><h3>Comparison: '+h(compare.name)+'</h3><div class="v2-compare"><div><p>Saved alternative</p><textarea class="v2-field v2-area" readonly>'+h(compare.text)+'</textarea></div><div><p>Current '+h(state.phase)+' writing</p><textarea class="v2-field v2-area" readonly>'+h(p().stages[state.phase])+'</textarea></div></div></div>':'');}
+out.slice().reverse().map(x=>'<div class="v2-panel"><div class="v2-row"><strong>'+h(x.name)+'</strong><span class="v2-mini">'+h(x.stage||'idea')+'</span></div><p>'+h(x.text.slice(0,180))+'</p><div class="v2-inline"><button class="v2-btn" data-out-compare="'+h(x.id)+'">Compare</button><button class="v2-btn" data-out-copy="'+h(x.id)+'">Copy</button><button class="v2-btn" data-out-restore="'+h(x.id)+'">Restore…</button><button class="v2-btn" data-out-rename="'+h(x.id)+'">Rename</button><button class="v2-btn" data-out-remove="'+h(x.id)+'">Delete</button></div></div>').join('')+
+(compare?'<div class="v2-panel"><h3>Comparison: '+h(compare.name)+'</h3><div class="v2-compare"><div><p>Saved alternative</p><textarea class="v2-field v2-area" readonly>'+h(compare.text)+'</textarea></div><div><p>Current '+h(compare.stage||state.phase)+' writing</p><textarea class="v2-field v2-area" readonly>'+h(p().stages[compare.stage]||'')+'</textarea></div></div></div>':'');}
 function circuitsHtml(){return '<p class="v2-muted">Real project operations preserved from V1, including backup and import.</p><div class="v2-panel"><h3>Blueprint actions</h3>'+
 '<div class="v2-inline">'+btn('New Spark','new-project')+btn('Rename Blueprint','rename-project')+btn('Duplicate','duplicate-project')+btn('Delete Blueprint','delete-project')+'</div></div>'+
 '<div class="v2-panel"><h3>Portable backups</h3><p>Export regularly. Data lives in the browser on this device, not on GitHub.</p>'+
@@ -124,13 +184,13 @@ function calibrationHtml(){return '<div class="v2-panel"><h3>Appearance</h3><p>W
 '<div class="v2-inline">'+['focus','explore','expanded'].map(m=>'<button class="v2-btn" data-mode="'+m+'">'+m[0].toUpperCase()+m.slice(1)+'</button>').join('')+'</div></div>'+
 '<div class="v2-panel"><h3>Local-first storage</h3><p>V2 writing uses a new browser-local key. The original V1 key is left intact. Use The Circuits to create a backup.</p>'+btn('Open The Circuits','open-circuits')+'</div>';}
 function wardrobeHtml(){return btn('← Calibration','open-calibration')+'<p class="v2-muted">Theme changes affect presentation, never your writing.</p>'+themes.map(([id,name])=>'<button class="v2-row" style="width:100%;background:transparent;color:inherit;border-left:0;border-top:0;border-right:0;text-align:left" data-theme-id="'+id+'"><strong>'+h(name)+'</strong><span>'+ (state.theme===id?'✓ Active':'Preview / apply')+'</span></button>').join('');}
-function addOuttake(text,name,src){let raw=String(text||'').trim();if(!raw){toast('Nothing to preserve yet');return;}let title=name||prompt('Name this Outtake','Alternate '+stages.find(x=>x[0]===state.phase)?.[1])||'';if(!title)return;let o={id:uuid(),name:title.slice(0,100),text:raw,stage:state.phase,type:src||'passage',createdAt:Date.now()};p().outtakes.push(o);save();toast('Saved separately in Outtakes');if(tool==='outtakes')renderTool();}
-function setStage(id){markSelection();state.phase=id;lastStage=id;save();render();}
+function addOuttake(text,name,src){let raw=String(text||'');if(!raw.trim()){toast('Nothing to preserve yet');return;}let title=name||prompt('Name this Outtake','Alternate '+stages.find(x=>x[0]===state.phase)?.[1])||'';if(!title)return;let o={id:uuid(),name:title.slice(0,100),text:raw,stage:state.phase,type:src||(selected?'passage':'stage'),createdAt:Date.now()};if(!src&&selected)o.anchor={start:selectedStart,end:selectedEnd,source:p().stages[state.phase]};if(!transaction(()=>p().outtakes.push(o)))return;toast('Saved separately in Outtakes');if(tool==='outtakes')renderTool();}
+function setStage(id){markSelection();state.phase=id;compareId=null;lastStage=id;save();render();}
 function changeMode(mode){state.mode=mode;panelOpen=mode==='expanded'?true:panelOpen;save();const work=root.querySelector('#v2-work');work.dataset.mode=mode;work.classList.toggle('tool-open',panelOpen&&mode!=='focus');root.querySelector('[data-act=cycle-mode]').textContent=mode[0].toUpperCase()+mode.slice(1);}
 function copyText(txt){if(navigator.clipboard?.writeText){navigator.clipboard.writeText(txt).then(()=>toast('Copied')).catch(()=>{window.prompt('Copy text',txt);});}else window.prompt('Copy text',txt);}
 function insertText(str){let area=root.querySelector('#v2-editor'),a=selectedStart,b=selectedEnd;if(!area)return;let src=area.value; if(a>src.length)a=src.length;if(b>src.length)b=a;
-let insert=String(str||'');if(!insert)return;area.value=src.slice(0,a)+insert+src.slice(b);p().stages[state.phase]=area.value;selectedStart=a+insert.length;selectedEnd=selectedStart;save();area.focus();area.setSelectionRange(selectedStart,selectedEnd);root.querySelector('#v2-count').textContent=area.value.trim().split(/\s+/).filter(Boolean).length+' words';toast('Inserted into working draft');}
-function chooseProject(id){if(!state.projects.some(x=>x.id===id))return;state.activeId=id;save();panelOpen=false;render();}
+let insert=String(str||'');if(!insert)return;area.value=src.slice(0,a)+insert+src.slice(b);p().stages[state.phase]=area.value;selectedStart=a+insert.length;selectedEnd=selectedStart;selected='';caretByStage[p().id+':'+state.phase]=[selectedStart,selectedEnd];save();area.focus();area.setSelectionRange(selectedStart,selectedEnd);root.querySelector('#v2-count').textContent=area.value.trim().split(/\s+/).filter(Boolean).length+' words';toast('Inserted into working draft');}
+function chooseProject(id){if(!state.projects.some(x=>x.id===id))return;markSelection();compareId=null;state.activeId=id;save();panelOpen=false;render();}
 function download(name,value,type){let b=new Blob([value],{type:type||'text/plain'}),url=URL.createObjectURL(b),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),10000);}
 function safeName(){return p().title.replace(/[^a-z0-9_-]/gi,'_').slice(0,60)||'Laced_Notes';}
 function diagnose(src){let lines=src.split(/\r?\n/).filter(x=>x.trim());let tokens=(src.toLowerCase().match(/[a-z']+/g)||[]);let ignore=new Set(['the','a','an','and','of','to','in','my','your','i','you','is','it','that','this','for','on','with']);let counts={};tokens.filter(t=>t.length>2&&!ignore.has(t)).forEach(t=>counts[t]=(counts[t]||0)+1);let repeats=Object.entries(counts).filter(x=>x[1]>1).sort((a,b)=>b[1]-a[1]).slice(0,8).map(x=>x[0]+' ×'+x[1]);let opening={};lines.forEach(line=>{let w=line.trim().split(/\s+/)[0]?.toLowerCase();if(w)opening[w]=(opening[w]||0)+1});let open=Object.entries(opening).filter(x=>x[1]>1).map(x=>x[0]+' ×'+x[1]);let sizes=lines.map(x=>x.trim().split(/\s+/).length);return 'OBSERVABLE PATTERNS\nLines with text: '+lines.length+'\nWords: '+tokens.length+'\nShortest / longest line: '+(sizes.length?Math.min(...sizes):0)+' / '+(sizes.length?Math.max(...sizes):0)+' words\nRepeated significant words: '+(repeats.join(', ')||'none')+'\nRepeated line openings: '+(open.join(', ')||'none')+'\n\nQUESTIONS TO TEST (not automated judgments)\n• Does intentional repetition strengthen the refrain?\n• Which change of line length alters the rhythm?\n• Where could a surprising image replace familiar phrasing?';}
@@ -149,7 +209,7 @@ if(act==='open-circuits'){openTool('circuits');return;}
 if(act==='new-project'){let q=newProject('Untitled idea',state.paletteTemplate);state.projects.push(q);state.activeId=q.id;state.phase='cluster';panelOpen=false;save();render();root.querySelector('#v2-editor')?.focus();toast('New Spark created. Start writing.');return;}
 if(act==='rename-project'){let name=prompt('Rename this Blueprint',p().title);if(name!==null&&name.trim()){p().title=name.trim().slice(0,120);save();render();}return;}
 if(act==='duplicate-project'){let q=clone(p());q.id=uuid();q.title+=' (copy)';q.createdAt=Date.now();q.updatedAt=Date.now();state.projects.push(q);state.activeId=q.id;save();render();return;}
-if(act==='delete-project'){if(!confirm('Delete this Blueprint and all its writing? Export a backup first.'))return;let idx=state.projects.findIndex(x=>x.id===state.activeId);state.projects.splice(idx,1);if(!state.projects.length)state.projects.push(newProject('Untitled idea',state.paletteTemplate));state.activeId=state.projects[0].id;save();render();return;}
+if(act==='delete-project'){if(!confirm('Delete this Blueprint and all its writing? Export a backup first.'))return;if(!transaction(()=>{let idx=state.projects.findIndex(x=>x.id===state.activeId);state.projects.splice(idx,1);if(!state.projects.length)state.projects.push(newProject('Untitled idea',state.paletteTemplate));state.activeId=state.projects[0].id;}))return;render();return;}
 if(act==='save-outtake'){markSelection();addOuttake(selected||p().stages[state.phase]);return;}
 if(act==='save-experiment'){let field=root.querySelector('#v2-exp-result');if(field)expr.result=field.value;addOuttake(expr.result,null,'crosswire');return;}
 if(act==='copy-seed'){copyText(p().legacySeed);return;}
@@ -163,7 +223,7 @@ if(act==='backup-text'){let body=p().title+'\n\n'+stages.map(s=>s[1].toUpperCase
 }
 root.addEventListener('input',e=>{
 let t=e.target;
-if(t.id==='v2-editor'){p().stages[state.phase]=t.value;root.querySelector('#v2-count').textContent=t.value.trim().split(/\s+/).filter(Boolean).length+' words';save();}
+if(t.id==='v2-editor'){markSelection();p().stages[state.phase]=t.value;root.querySelector('#v2-count').textContent=t.value.trim().split(/\s+/).filter(Boolean).length+' words';save();}
 if(t.id==='v2-name'){p().title=t.value.trim()||'Untitled idea';let head=root.querySelector('.v2-project');if(head)head.textContent=p().title+' ▾';save();}
 if(t.id==='v2-exp-result')expr.result=t.value;
 if(t.id==='v2-exp-a')expr.a=t.value;if(t.id==='v2-exp-b')expr.b=t.value;
@@ -189,19 +249,45 @@ if(t.dataset.paletteRename){let k=t.dataset.paletteRename,v=prompt('Rename categ
 if(t.dataset.outCompare){compareId=t.dataset.outCompare;renderTool();return;}
 if(t.dataset.outCopy){let out=p().outtakes.find(o=>o.id===t.dataset.outCopy);if(out)copyText(out.text);return;}
 if(t.dataset.outRename){let out=p().outtakes.find(o=>o.id===t.dataset.outRename);let n=out&&prompt('Rename Outtake',out.name);if(n?.trim()){out.name=n.trim();save();renderTool();}return;}
-if(t.dataset.outRemove){let idx=p().outtakes.findIndex(o=>o.id===t.dataset.outRemove);if(idx>=0&&confirm('Delete this saved Outtake?')){p().outtakes.splice(idx,1);if(compareId===t.dataset.outRemove)compareId=null;save();renderTool();}return;}
-if(t.dataset.outRestore){let out=p().outtakes.find(o=>o.id===t.dataset.outRestore);if(!out)return;if(!confirm('Replace the current '+state.phase+' draft with this saved alternative? Your current draft will first be preserved in Outtakes.'))return;
-let current=p().stages[state.phase];if(current.trim())p().outtakes.push({id:uuid(),name:'Before restore · '+new Date().toLocaleString(),text:current,stage:state.phase,type:'restore-safety',createdAt:Date.now()});
-p().stages[state.phase]=out.text;save();render();openTool('outtakes');toast('Restored with recoverable prior draft');return;}
+if(t.dataset.outRemove){let idx=p().outtakes.findIndex(o=>o.id===t.dataset.outRemove);if(idx>=0&&confirm('Delete this saved Outtake?')){if(!transaction(()=>p().outtakes.splice(idx,1)))return;if(compareId===t.dataset.outRemove)compareId=null;renderTool();}return;}
+if(t.dataset.outRestore){
+const out=p().outtakes.find(o=>o.id===t.dataset.outRestore);if(!out)return;
+const stage=out.stage;if(!stages.some(s=>s[0]===stage)){toast('This Outtake has no safe destination. Copy it into a draft.');return;}
+const current=p().stages[stage];let replacement;
+if(out.type==='stage'||out.type==='restore-safety')replacement=out.text;
+else if(out.type==='passage'&&out.anchor&&typeof out.anchor.source==='string'&&Number.isInteger(out.anchor.start)&&Number.isInteger(out.anchor.end)&&out.anchor.start>=0&&out.anchor.end>out.anchor.start&&out.anchor.end<=out.anchor.source.length){
+const prefix=out.anchor.source.slice(0,out.anchor.start),suffix=out.anchor.source.slice(out.anchor.end);
+if(!current.startsWith(prefix)||!current.endsWith(suffix)||current.length<prefix.length+suffix.length){toast('Passage context has changed. Copy this Outtake into the intended selection.');return;}
+replacement=prefix+out.text+suffix;
+}else{toast('Passage context has changed or is unknown. Copy this Outtake into the intended selection.');return;}
+if(!confirm('Restore '+(out.type==='passage'?'the saved passage in ':'the entire ')+stage+' draft? Its current text will be saved in Outtakes first.'))return;
+if(!transaction(()=>{
+p().outtakes.push({id:uuid(),name:'Before restore · '+new Date().toLocaleString(),text:current,stage,type:'restore-safety',createdAt:Date.now()});
+p().stages[stage]=replacement;
+}))return;
+markSelection();state.phase=stage;save();render();openTool('outtakes');toast('Restored with recoverable prior draft');return;
+}
 if(t.dataset.act)handleAct(t.dataset.act);
 });
+root.addEventListener('select',e=>{if(e.target.id==='v2-editor')markSelection()});
+root.addEventListener('focusout',e=>{if(e.target.id==='v2-editor')markSelection()});
 root.addEventListener('mouseup',e=>{if(e.target.id==='v2-editor')markSelection()});root.addEventListener('keyup',e=>{if(e.target.id==='v2-editor')markSelection()});
 root.addEventListener('change',async e=>{
 if(e.target.id!=='v2-import')return;let file=e.target.files?.[0];if(!file)return;if(file.size>15e6){toast('Choose a backup under 15 MB');return;}
-try{let data=JSON.parse(await file.text());let arr;if(data.version===2&&Array.isArray(data.projects))arr=data.projects.map(v2Project).filter(Boolean);else if(Array.isArray(data.projects))arr=data.projects.filter(x=>x&&typeof x.title==='string').map(fromLegacy);else throw Error('No valid projects');if(!arr.length||arr.length>1000)throw Error('No usable projects');
+try{let data=JSON.parse(await file.text());validateProjects(data,data.version,1000);if(![1,2].includes(data.version))throw Error('Unsupported backup version');
+const arr=data.projects.map(data.version===2?v2Project:fromLegacy);
+if(!transaction(()=>{
 for(let q of arr){q.id=uuid();q.title=q.title+' (imported)';state.projects.push(q);}
-state.activeId=arr[0].id;save();render();toast('Imported '+arr.length+' Blueprints as copies');}catch(err){toast('Import failed: '+err.message);}
+state.activeId=arr[0].id;
+// Import as copies keeps this workspace's preferences. Incoming preferences are
+// retained on the import record and included in subsequent JSON backups.
+(state.imports??=[]).push({importedAt:Date.now(),preferences:{theme:data.theme,phase:data.phase,mode:data.mode,paletteTemplate:data.paletteTemplate},projectIds:arr.map(q=>q.id)});
+}))return;
+render();toast('Imported '+arr.length+' Blueprints as copies');}catch(err){toast('Import failed: '+err.message);}
 });
+document.addEventListener('selectionchange',()=>{if(document.activeElement?.id==='v2-editor')markSelection()});
+root.addEventListener('scroll',e=>{if(e.target.id==='v2-editor')scrollByStage[p().id+':'+state.phase]=e.target.scrollTop;},true);
 window.addEventListener('pagehide',save);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')save()});
-render();save();
+save();render();if(startupNotice)toast(startupNotice);
+if('serviceWorker' in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>toast('Offline setup failed. Keep a backup.')));
 })();

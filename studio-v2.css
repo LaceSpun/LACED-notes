@@ -1,5 +1,5 @@
 
-/* Laced Notes V2: self-contained responsive studio, preserving V1 markup as fallback. */
+/* Laced Notes V2: self-contained responsive studio, retaining inactive V1 markup. */
 body.v2-active{margin:0;background:#141a1b;color:#eee9da;overflow:hidden}
 body.v2-active > .app-shell,body.v2-active > .floating-note,body.v2-active > #popAnchor,body.v2-active > #toolDrawer,body.v2-active > #drawerScrim,body.v2-active > #modalScrim,body.v2-active > #toast{display:none!important}
 #laced-v2{--bg:#151d1e;--surface:#20292b;--sub:#293436;--paper:#292c2d;--ink:#efeade;--muted:#b7b5aa;--edge:#536161;--gold:#d5b47c;--accent:#a1b2a1;--ink2:#f6edd8;height:100dvh;min-height:450px;display:flex;flex-direction:column;background:radial-gradient(circle at 85% -12%,#614d6033,transparent 38%),linear-gradient(115deg,#111b1a,#26232c 95%);color:var(--ink);font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:14px;line-height:1.5}
