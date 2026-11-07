@@ -1,0 +1,20 @@
+name: V2 data regression checks
+on:
+  pull_request:
+  push:
+    branches:
+      - 'repair/**'
+      - 'feature/**'
+permissions:
+  contents: read
+jobs:
+  data-reliability:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check studio-v2.js
+      - run: node --check sw.js
+      - run: node --test tests/v2-smoke.test.cjs

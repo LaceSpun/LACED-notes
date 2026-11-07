@@ -38,6 +38,7 @@ body[data-theme=evidence] .topbar,body[data-theme=astrology] .topbar,body[data-t
 
 </style>
 <title>Laced Notes — creative workspace</title>
+  <link rel="stylesheet" href="./studio-v2.css">
 </head>
 <body data-theme="corkboard">
 <div class="app-shell" id="appShell">
@@ -108,6 +109,8 @@ body[data-theme=evidence] .topbar,body[data-theme=astrology] .topbar,body[data-t
 /* Laced Notes v1: local-first personal songwriting workspace. No external services. */
 (() => {
 'use strict';
+// V1 source stays available in git; never run two storage owners in V2.
+return;
 const STORE_KEY='laced-notes-v1';
 const PHASES=[
  {id:'collect',label:'Collect',hint:'Capture the fragments before you explain them.',placeholder:'A sentence. A memory. An overheard phrase. Collect first, judge later.'},
@@ -277,5 +280,6 @@ startup();
 })();
 
 </script>
+  <script src="./studio-v2.js"></script>
 </body>
 </html>
